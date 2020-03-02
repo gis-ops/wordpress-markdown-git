@@ -33,14 +33,14 @@ The plugin features a variety of shortcodes following a pattern of `[git-<platfo
     
 ### Attributes
 
-Each shortcode can take a few attributes:
+Each shortcode takes a few attributes:
 
-| attribute | action  | type    | description                                                                                                   |
-|-----------|---------|---------|---------------------------------------------------------------------------------------------------------------|
-| url       | all     | string  | The browser URL of the document, e.g. https://github.com/gis-ops/wordpress-markdown-git/blob/master/README.md |
-| user      | all     | string  | The **user name** (not email) of an authorized user                                                           |
-| token     | all     | string  | The access token/app password for the authorized user*                                                        |
-| limit     | history | integer | Limits the history of commits to this number.                                                                 |
+| Attribute | Action  | Required                      | Type    | Description                                                                                                   |
+|-----------|---------|-------------------------------|---------|---------------------------------------------------------------------------------------------------------------|
+| url       | all     | :ballot_box_with_check:       | string  | The browser URL of the document, e.g. https://github.com/gis-ops/wordpress-markdown-git/blob/master/README.md |
+| user      | all     | :ballot_box_with_check:       | string  | The **user name** (not email) of an authorized user                                                           |
+| token     | all     | :ballot_box_with_check:       | string  | The access token/app password for the authorized user*                                                        |
+| limit     | history | :negative_squared_cross_mark: | integer | Limits the history of commits to this number.                                                                 |                                                               |
 
 How to generate the `token` depends on your platform:
 
