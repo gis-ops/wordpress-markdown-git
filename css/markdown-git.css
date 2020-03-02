@@ -1,0 +1,31 @@
+/*From https://github.com/ghandic/nbconvert/blob/master/css/nbconvert.css*/
+
+div.markdown-github {
+  position: relative;
+  font-size: 0.75em;
+  margin-bottom:15px;
+  display: inline-block;
+}
+
+div.markdown-github label.github-last-update {
+  color:rgba(225, 246, 255, 0.45);
+  font-weight:200;
+  display: inline;
+}
+
+div.markdown-github div.markdown-github-labels label.github-link a,
+div.markdown-github div.markdown-github-labels label.github-link a:focus {
+  color:#fff;
+  -webkit-box-shadow:none;
+  box-shadow:none;
+}
+
+div.markdown-github div.markdown-github-labels {
+  color:white;
+  line-height: 20px;
+  padding: 0px 5px;
+  background-color: #345;
+  text-transform:none;
+  font-size:1.1em;
+  font-family: "Helvetica Neue",Helvetica,Arial,sans-serif;
+}
