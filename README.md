@@ -75,10 +75,12 @@ The newest release of the plugin can be installed via WordPress plugin store.
 
 The newest version, which might not have made it into the plugin store yet, can be installed via the [WP Pusher](https://wppusher.com/download) plugin.
 
-## Related projects
+## Contributions from other projects
 
-- [`github-markdown-css`](https://github.com/sindresorhus/github-markdown-css): CSS project for the Github flavored Markdown style
-- [`nbconvert`](https://github.com/ghandic/nbconvert): Wordpress plugin to convert Jupyter notebooks into blog posts
+- [`github-markdown-css`](https://github.com/sindresorhus/github-markdown-css): CSS project for the Github flavored Markdown style, License MIT
+    - This plugin maintains a copy of the CSS file
+- [`nbconvert`](https://github.com/ghandic/nbconvert): Wordpress plugin to convert Jupyter notebooks into blog posts, License MIT
+    - The idea for this plugin was mainly inspired by `nbconvert` and borrows some of the HTML and CSS
 
 ## Sponsors
 
