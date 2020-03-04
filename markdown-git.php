@@ -14,18 +14,19 @@ if ( ! defined( 'ABSPATH' ) ) {
     exit; // Exit if accessed directly
 }
 
+# Add any additional providers here
+$providers = ['github', 'bitbucket'];
 
 define('MARKDOWNGIT_PLUGIN_PATH', dirname( __FILE__ ));
 
-# Add shortcodes for registered providers
-$providers = ['github', 'bitbucket'];
+# Add shortcodes for registered providers automatically from $providers
 foreach($providers as $provider) {
     require_once MARKDOWNGIT_PLUGIN_PATH . '/includes/providers/class-' . $provider . '-loader.php';
     $class = ucfirst($provider) . 'Loader';
     $instance = new $class();
 }
 
-# Enqueue Github stylesheet
+# Enqueue Github and plugin stylesheet
 add_action('wp_enqueue_style', wp_enqueue_style( 'github_markdown', plugins_url( 'css/github-markdown.css', __FILE__ )));
 add_action('wp_enqueue_style', wp_enqueue_style( 'markdown_git', plugins_url( 'css/markdown-git.css', __FILE__ )));
 

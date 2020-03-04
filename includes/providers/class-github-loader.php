@@ -58,6 +58,9 @@ class GithubLoader extends BaseLoader {
         return array($response_body, $response_code);
     }
 
+    /**
+     * Helper function used to get commit history and last commit date
+     */
     private function request_commits(&$owner, &$repo, &$branch, &$file_path) {
         $args = array(
             'body' => array(

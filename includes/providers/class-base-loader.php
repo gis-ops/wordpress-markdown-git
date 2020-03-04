@@ -6,11 +6,56 @@ abstract class BaseLoader {
     protected $user;
     protected $token;
 
+    /**
+     * The API specific function to return the raw Markdown document and HTTP response code.
+     * In case of an API error, the response body is not used.
+     *
+     * @param $owner string the repository's owner
+     * @param $repo string the repository's name
+     * @param $branch string the desired branch or commit SHA
+     * @param $file_path string the relative file path within the repository
+     * @return mixed array of response body and HTTP response code
+     */
     abstract protected function get_markdown(&$owner, &$repo, &$branch, &$file_path);
+
+    /**
+     * The API specific function to return the raw date of the last commit of the file and HTTP response code.
+     * In case of an API error, the date string variable is not used.
+     *
+     * @param $owner string the repository's owner
+     * @param $repo string the repository's name
+     * @param $branch string the desired branch or commit SHA
+     * @param $file_path string the relative file path within the repository
+     * @return mixed array of raw date string and response HTTP code
+     */
     abstract protected function get_checkout_datetime(&$owner, &$repo, &$branch, &$file_path);
+
+    /**
+     * The API specific function to return the response JSON array for all commits of the file and HTTP response code.
+     * In case of an API error, the response JSON array is not used.
+     *
+     * @param $owner string the repository's owner
+     * @param $repo string the repository's name
+     * @param $branch string the desired branch or commit SHA
+     * @param $file_path string the relative file path within the repository
+     * @return mixed array of associative array of the response JSON and response HTTP code
+     */
     abstract protected function get_history(&$owner, &$repo, &$branch, &$file_path);
+
+    /**
+     * The API specific function to parse the name, date and message per commit.
+     *
+     * @param $commit array The associative array for a single commit from the JSON response
+     * @return mixed array of name, date and message
+     */
     abstract protected function extract_history_from_commit_json(&$commit);
 
+    /**
+     * The callback function for the "post" shortcode action.
+     *
+     * @param $sc_attrs array Shortcode attributes
+     * @return string HTML of the whole Markdown document processed by Github's markdown endpoint
+     */
     public function doPost($sc_attrs)
     {
         # Normalize shortcode attributes to lower case
@@ -47,7 +92,13 @@ abstract class BaseLoader {
         return '<div>' . $html_body . '</div>';
     }
 
-    function doCheckout($sc_attrs)
+    /**
+     * The callback function for the "checkout" shortcode action.
+     *
+     * @param $sc_attrs array Shortcode attributes
+     * @return string HTML for the checkout span
+     */
+    public function doCheckout($sc_attrs)
     {
         # Normalize shortcode attributes to lower case
         $sc_attrs = array_change_key_case((array)$sc_attrs, CASE_LOWER);
@@ -80,7 +131,13 @@ abstract class BaseLoader {
         </div>';
     }
 
-    function doHistory($sc_attrs)
+    /**
+     * The callback function for the "history" shortcode action.
+     *
+     * @param $sc_attrs array Shortcode attributes
+     * @return string HTML for the Last X commits section
+     */
+    public function doHistory($sc_attrs)
     {
         # Normalize shortcode attributes to lower case
         $sc_attrs = array_change_key_case((array)$sc_attrs, CASE_LOWER);
@@ -107,10 +164,21 @@ abstract class BaseLoader {
         return $html_string;
     }
 
-    function get_auth_header(){
+    /**
+     * Determines and returns the correct Authorization header, depending on the API
+     *
+     * @return string Base64 encoded Basic Authorization header
+     */
+    protected function get_auth_header(){
         return 'Basic ' . base64_encode($this->user . ':' . $this->token);
     }
 
+    /**
+     * Extract the relevant attributes from the URL provided by the "url" shortcode attribute.
+     *
+     * @param $url string URL of the file to be rendered
+     * @return array array of relevant URL attributes
+     */
     private function extract_url($url)
     {
         $url_exploded = explode('/', parse_url($url, PHP_URL_PATH));
@@ -123,6 +191,15 @@ abstract class BaseLoader {
         );
     }
 
+    /**
+     * Extracts the attributes from a shortcode. All attributes of all shortcodes are extracted,
+     * but not necessarily passed, so they default to an empty string.
+     *
+     * It also sets the class attributes "user" and "token".
+     *
+     * @param $attrs array Attributes of the shortcode
+     * @return array parsed url and limit
+     */
     private function extract_attributes($attrs) {
         extract(shortcode_atts(array(
                 'url' => "",
