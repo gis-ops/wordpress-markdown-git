@@ -2,7 +2,6 @@
 
 class GithubLoader extends BaseLoader {
 
-    protected static $baseURL= 'https://api.github.com/';
     protected static $PROVIDER = 'Github';
 
     protected function extract_history_from_commit_json(&$commit) {
@@ -13,14 +12,14 @@ class GithubLoader extends BaseLoader {
         );
     }
 
-    protected function get_history(&$owner, &$repo, &$branch, &$file_path) {
-        list($response_body, $response_code) = $this->request_commits($owner, $repo, $branch, $file_path);
+    protected function get_history() {
+        list($response_body, $response_code) = $this->request_commits();
         return json_decode($response_body, true);
     }
 
-    protected function get_checkout_datetime(&$owner, &$repo, &$branch, &$file_path)
+    protected function get_checkout_datetime()
     {
-        list($response_body, $response_code) = $this->request_commits($owner, $repo, $branch, $file_path);
+        list($response_body, $response_code) = $this->request_commits();
         $json = json_decode($response_body, true);
         $datetime = $json[0]['commit']['committer']['date'];
 
@@ -31,17 +30,17 @@ class GithubLoader extends BaseLoader {
         return array($datetime, $response_code);
     }
 
-    protected function get_markdown(&$owner, &$repo, &$branch, &$file_path) {
+    protected function get_markdown() {
         $args = array(
             'body' => array(
-                'ref' => $branch
+                'ref' => $this->branch
             ),
             'headers' => array(
                 'Accept' => 'application/vnd.github.VERSION.raw',
                 'Authorization' => $this->get_auth_header()
             )
         );
-        $get_url = self::$baseURL . 'repos/' . $owner . '/' . $repo . '/contents/' . $file_path;
+        $get_url = "https://api.$this->domain/repos/$this->owner/$this->repo/contents/$this->file_path";
 
         $wp_remote = wp_remote_get($get_url, $args);
         $response_body = wp_remote_retrieve_body($wp_remote);
@@ -53,18 +52,18 @@ class GithubLoader extends BaseLoader {
     /**
      * Helper function used to get commit history and last commit date
      */
-    private function request_commits(&$owner, &$repo, &$branch, &$file_path) {
+    private function request_commits() {
         $args = array(
             'body' => array(
-                'path' => $file_path,
-                'sha' => $branch
+                'path' => $this->file_path,
+                'sha' => $this->branch
             ),
             'headers' => array(
                 'Accept' => 'application/json',
                 'Authorization' => $this->get_auth_header()
             )
         );
-        $get_url = self::$baseURL . 'repos/' . $owner . '/' . $repo . '/commits';
+        $get_url = "https://api.$this->domain/repos/$this->owner/$this->repo/commits";
 
         $wp_remote = wp_remote_get($get_url, $args);
         $response_body = wp_remote_retrieve_body($wp_remote);

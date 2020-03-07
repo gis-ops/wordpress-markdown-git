@@ -2,7 +2,16 @@
 
 abstract class BaseLoader {
     protected static $GITHUB_MARKDOWN_API = 'https://api.github.com/markdown';
-    protected static $PROVIDER;
+    protected static $PROVIDER;  # Needs to be set for every subclass
+
+    # Can vary for self-hosted versions of the platforms
+    protected $domain;
+
+    # Will dependent on url shortcode attribute, set during parsing url attribute
+    protected $owner;
+    protected $repo;
+    protected $branch;
+    protected $file_path;
     protected $user;
     protected $token;
 
@@ -20,37 +29,25 @@ abstract class BaseLoader {
      * The API specific function to return the raw Markdown document and HTTP response code.
      * In case of an API error, the response body is not used.
      *
-     * @param $owner string the repository's owner
-     * @param $repo string the repository's name
-     * @param $branch string the desired branch or commit SHA
-     * @param $file_path string the relative file path within the repository
      * @return mixed array of response body and HTTP response code
      */
-    abstract protected function get_markdown(&$owner, &$repo, &$branch, &$file_path);
+    abstract protected function get_markdown();
 
     /**
      * The API specific function to return the raw date of the last commit of the file and HTTP response code.
      * In case of an API error, the date string variable is not used.
      *
-     * @param $owner string the repository's owner
-     * @param $repo string the repository's name
-     * @param $branch string the desired branch or commit SHA
-     * @param $file_path string the relative file path within the repository
      * @return mixed array of raw date string and response HTTP code
      */
-    abstract protected function get_checkout_datetime(&$owner, &$repo, &$branch, &$file_path);
+    abstract protected function get_checkout_datetime();
 
     /**
      * The API specific function to return the response JSON array for all commits of the file and HTTP response code.
      * In case of an API error, the response JSON array is not used.
      *
-     * @param $owner string the repository's owner
-     * @param $repo string the repository's name
-     * @param $branch string the desired branch or commit SHA
-     * @param $file_path string the relative file path within the repository
      * @return mixed array of associative array of the response JSON and response HTTP code
      */
-    abstract protected function get_history(&$owner, &$repo, &$branch, &$file_path);
+    abstract protected function get_history();
 
     /**
      * The API specific function to parse the name, date and message per commit.
@@ -72,8 +69,8 @@ abstract class BaseLoader {
         $sc_attrs = array_change_key_case((array)$sc_attrs, CASE_LOWER);
 
         list($url, $limit) = $this->extract_attributes($sc_attrs);
-        list($owner, $repo, $branch, $file_path) = $this->extract_url($url);
-        list($raw_markdown, $response_code) = $this->get_markdown($owner, $repo, $branch, $file_path);
+        $this->set_repo_details($url);
+        list($raw_markdown, $response_code) = $this->get_markdown();
 
         switch ($response_code) {
             case 200:
@@ -114,9 +111,9 @@ abstract class BaseLoader {
         $sc_attrs = array_change_key_case((array)$sc_attrs, CASE_LOWER);
 
         list($url, $limit) = $this->extract_attributes($sc_attrs);
-        list($owner, $repo, $branch, $file_path) = $this->extract_url($url);
+        $this->set_repo_details($url);
 
-        list($datetime_str, $response_code) = $this->get_checkout_datetime($owner, $repo, $branch, $file_path);
+        list($datetime_str, $response_code) = $this->get_checkout_datetime();
 
         switch ($response_code) {
             case 200:
@@ -153,11 +150,11 @@ abstract class BaseLoader {
         $sc_attrs = array_change_key_case((array)$sc_attrs, CASE_LOWER);
 
         list($url, $limit) = $this->extract_attributes($sc_attrs);
-        list($owner, $repo, $branch, $file_path) = $this->extract_url($url);
+        $this->set_repo_details($url);
 
         $html_string = '<hr style="margin: 20px 0; width: 70%; border-top: 1.5px solid #aaaaaa;" /><article class="markdown-body"><h2><strong><a target="_blank" href="' . $url . '">Post history - Last 5 commits</a></strong></h2>';
 
-        $commits_json = $this->get_history($owner, $repo,$branch,$file_path);
+        $commits_json = $this->get_history();
 
         $i = 0;
         foreach ($commits_json as $item) {
@@ -184,21 +181,29 @@ abstract class BaseLoader {
     }
 
     /**
-     * Extract the relevant attributes from the URL provided by the "url" shortcode attribute.
+     * Extract the relevant attributes from the URL provided by the "url" shortcode attribute and set
+     * class attributes to access them in other functions.
      *
      * @param $url string URL of the file to be rendered
-     * @return array array of relevant URL attributes
      */
-    private function extract_url($url)
+    protected function set_repo_details($url)
     {
-        $url_exploded = explode('/', parse_url($url, PHP_URL_PATH));
+        $url_parsed = parse_url($url);
+        $domain = $url_parsed['host'];
+        $path = $url_parsed['path'];
 
-        return array(
-            $url_exploded[1],  # owner
-            $url_exploded[2],  # repo
-            $url_exploded[4],  # branch
-            implode('/', array_slice($url_exploded, 5))  # file path
-        );
+        $exploded_path = explode('/', $path);
+        $owner = $exploded_path[1];
+        $repo = $exploded_path[2];
+        $branch = $exploded_path[4];
+        $file_path = implode('/', array_slice($exploded_path, 5));
+
+        $this->domain = $domain;
+        $this->owner = $owner;
+        $this->repo = $repo;
+        $this->branch = $branch;
+        $this->file_path = $file_path;
+
     }
 
     /**

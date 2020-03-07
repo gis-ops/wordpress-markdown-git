@@ -5,7 +5,7 @@ This WordPress Plugin lets you easily publish, collaborate on and version contro
 The advantages are:
 
 - Write Markdown in your favorite editor and just push to your remote repository to update your blog instantly
-- Use the power of version control: publish different versions of the document in different posts, i.e. from another branch than `master`
+- Use the power of version control: publish different versions of the document in different posts, i.e. from another branch or commit than latest `master`
 - Easy to update by external users via pull requests, minimizes the chance of stale tutorials 
 
 The following document types are currently supported:

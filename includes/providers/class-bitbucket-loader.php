@@ -2,7 +2,6 @@
 
 class BitbucketLoader extends BaseLoader {
 
-    protected static $baseURL= 'https://api.bitbucket.org/2.0/';
     protected static $PROVIDER = 'Bitbucket';
 
     protected function extract_history_from_commit_json(&$commit) {
@@ -13,14 +12,14 @@ class BitbucketLoader extends BaseLoader {
         );
     }
 
-    protected function get_history(&$owner, &$repo, &$branch, &$file_path) {
-        list($response_body, $response_code) = $this->request_commits($owner, $repo, $branch, $file_path);
+    protected function get_history() {
+        list($response_body, $response_code) = $this->request_commits();
         return json_decode($response_body, true)['values'];
     }
 
-    protected function get_checkout_datetime(&$owner, &$repo, &$branch, &$file_path)
+    protected function get_checkout_datetime()
     {
-        list($response_body, $response_code) = $this->request_commits($owner, $repo, $branch, $file_path);
+        list($response_body, $response_code) = $this->request_commits();
         $json = json_decode($response_body, true);
         $datetime = $json['values'][0]['date'];
 
@@ -31,13 +30,13 @@ class BitbucketLoader extends BaseLoader {
         return array($datetime, $response_code);
     }
 
-    protected function get_markdown(&$owner, &$repo, &$branch, &$file_path) {
+    protected function get_markdown() {
         $args = array(
             'headers' => array(
                 'Authorization' => $this->get_auth_header()
             )
         );
-        $get_url = self::$baseURL . "repositories/$owner/$repo/src/$branch/$file_path";
+        $get_url = "https://api.$this->domain/2.0/repositories/$this->owner/$this->repo/src/$this->branch/$this->file_path";
 
         $wp_remote = wp_remote_get($get_url, $args);
         $response_body = wp_remote_retrieve_body($wp_remote);
@@ -46,17 +45,20 @@ class BitbucketLoader extends BaseLoader {
         return array($response_body, $response_code);
     }
 
-    private function request_commits(&$owner, &$repo, &$branch, &$file_path) {
+    /**
+     * Helper function used to get commit history and last commit date
+     */
+    private function request_commits() {
         $args = array(
             'body' => array(
-                'path' => $file_path
+                'path' => $this->file_path
             ),
             'headers' => array(
                 'Accept' => 'application/json',
                 'Authorization' => $this->get_auth_header()
             )
         );
-        $get_url = self::$baseURL . "repositories/$owner/$repo/commits/$branch";
+        $get_url = "https://api.$this->domain/2.0/repositories/$this->owner/$this->repo/commits/$this->branch";
 
         $wp_remote = wp_remote_get($get_url, $args);
         $response_body = wp_remote_retrieve_body($wp_remote);
