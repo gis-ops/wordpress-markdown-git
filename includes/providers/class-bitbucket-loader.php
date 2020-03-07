@@ -1,17 +1,9 @@
 <?php
 
-include_once('class-base-loader.php');
-
 class BitbucketLoader extends BaseLoader {
 
     protected static $baseURL= 'https://api.bitbucket.org/2.0/';
     protected static $PROVIDER = 'Bitbucket';
-
-    public function __construct() {
-        add_shortcode('git-bitbucket-markdown', array($this, 'doPost'));
-        add_shortcode('git-bitbucket-checkout', array($this, 'doCheckout'));
-        add_shortcode('git-bitbucket-history', array($this, 'doHistory'));
-    }
 
     protected function extract_history_from_commit_json(&$commit) {
         return array(

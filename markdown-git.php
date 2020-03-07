@@ -14,6 +14,8 @@ if ( ! defined( 'ABSPATH' ) ) {
     exit; // Exit if accessed directly
 }
 
+include('includes/providers/class-base-loader.php');
+
 # Add any additional providers here
 $providers = ['github', 'bitbucket'];
 

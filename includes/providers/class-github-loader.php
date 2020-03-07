@@ -1,17 +1,9 @@
 <?php
 
-include_once('class-base-loader.php');
-
 class GithubLoader extends BaseLoader {
 
     protected static $baseURL= 'https://api.github.com/';
     protected static $PROVIDER = 'Github';
-
-    public function __construct() {
-        add_shortcode('git-github-markdown', array($this, 'doPost'));
-        add_shortcode('git-github-checkout', array($this, 'doCheckout'));
-        add_shortcode('git-github-history', array($this, 'doHistory'));
-    }
 
     protected function extract_history_from_commit_json(&$commit) {
         return array(

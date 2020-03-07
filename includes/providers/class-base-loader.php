@@ -6,6 +6,16 @@ abstract class BaseLoader {
     protected $user;
     protected $token;
 
+    public function __construct() {
+        if (!isset(static::$PROVIDER)) {
+            throw new LogicException("Class property PROVIDER must be set for " . static::class);
+        }
+        $provider = strtolower(static::$PROVIDER);
+        add_shortcode("git-$provider-markdown", array($this, 'doPost'));
+        add_shortcode("git-$provider-checkout", array($this, 'doCheckout'));
+        add_shortcode("git-$provider-history", array($this, 'doHistory'));
+    }
+
     /**
      * The API specific function to return the raw Markdown document and HTTP response code.
      * In case of an API error, the response body is not used.
