@@ -22,7 +22,7 @@ The following platforms are currently supported:
 
 ### Shortcodes
 
-The plugin features a variety of shortcodes following a pattern of `[git-<platform>-<action>`, where
+The plugin features a variety of shortcodes following a pattern of `[git-<platform>-<action>]`, where
 
 - `<platform>` can be one of
     - `github`: if you use Github as your VCS platform
