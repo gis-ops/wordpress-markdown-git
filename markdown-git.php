@@ -17,7 +17,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 include('includes/providers/class-base-loader.php');
 
 # Add any additional providers here
-$providers = ['github', 'bitbucket'];
+$providers = ['github', 'bitbucket', 'gitlab'];
 
 define('MARKDOWNGIT_PLUGIN_PATH', dirname( __FILE__ ));
 
