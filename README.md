@@ -1,6 +1,6 @@
-# WordPress Plugin - Documents from Git
+# WordPress Plugin - Publish Documents from Git
 
-This WordPress Plugin lets you easily publish, collaborate on and version control your \[**Markdown**\] documents directly from your favorite remote Git platform.
+This WordPress Plugin lets you easily publish, collaborate on and version control your \[**Markdown**\] documents directly from your favorite remote Git platform, even if it's self-hosted.
 
 The advantages are:
 
@@ -16,6 +16,7 @@ The following platforms are currently supported:
 
 - Github
 - Bitbucket
+- Gitlab
 
 ## Usage
 
@@ -26,6 +27,7 @@ The plugin features a variety of shortcodes following a pattern of `[git-<platfo
 - `<platform>` can be one of
     - `github`: if you use Github as your VCS platform
     - `bitbucket`: if you use Bitbucket as your VCS platform
+    - `gitlab`: if you use Gitlab as your VCS platform
 - `<action>` can be one of
     - `markdown`: Render your Markdown files hosted on your VCS platform in Github's render style
     - `checkout`: Renders a small badge-like box with a link to the document and the date of the last commit
@@ -46,6 +48,7 @@ How to generate the `token` depends on your platform:
 
 - Github: Generate a Personal Access Token following [these instructions](https://help.github.com/en/github/authenticating-to-github/creating-a-personal-access-token-for-the-command-line)
 - Bitbucket: Generate a App Password following [these instructions](https://confluence.atlassian.com/bitbucket/app-passwords-828781300.html#Apppasswords-Createanapppassword)
+- Gitlab: Generate a Personal Access Token following [these instructions](https://docs.gitlab.com/ee/user/profile/personal_access_tokens.html#creating-a-personal-access-token)
 
 This plugin needs only **Read access** to your repositories. Keep that in mind when creating an access token.
 
@@ -63,7 +66,7 @@ We publish our own tutorials with this plugin: https://gis-ops.com/tutorials/.
 
 #### Display commit history from Github
 
-`git-github-history limit=5 user=nilsnolde token=hxsCL7LpnEp55FH9qK url="https://github.com/gis-ops/tutorials/blob/master/qgis/QGIS_SimplePlugin.md"]`
+`git-gitlab-history limit=5 user=nilsnolde token=hxsCL7LpnEp55FH9qK url="https://gitlab.com/nilsnolde/esy-osm-pbf/-/blob/master/README.md"]`
 
 ## Installation
 
