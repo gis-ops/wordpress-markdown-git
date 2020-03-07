@@ -17,7 +17,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 include('includes/providers/class-base-loader.php');
 
 # Add any additional providers here
-$providers = ['github', 'bitbucket'];
+$providers = ['github', 'bitbucket', 'gitlab'];
 
 define('MARKDOWNGIT_PLUGIN_PATH', dirname( __FILE__ ));
 
@@ -41,7 +41,7 @@ function add_enclosing_classes($sc_attrs, $content) {
     ], $sc_attrs);
 
     $new_content = '';
-    $new_content .= '<div class="' . $sc_attrs_parsed['classes'] . '">';
+    $new_content .= '<div id="git-add-css" class="' . $sc_attrs_parsed['classes'] . '">';
     $new_content .= do_shortcode($content);
     $new_content .= '</div>';
 

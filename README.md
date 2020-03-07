@@ -22,7 +22,9 @@ The following platforms are currently supported:
 
 ### Shortcodes
 
-The plugin features a variety of shortcodes following a pattern of `[git-<platform>-<action>]`, where
+The plugin features a variety of shortcodes. 
+ 
+The document-specific shortcode follow a pattern of `[git-<platform>-<action>]`, where
 
 - `<platform>` can be one of
     - `github`: if you use Github as your VCS platform
@@ -32,6 +34,18 @@ The plugin features a variety of shortcodes following a pattern of `[git-<platfo
     - `markdown`: Render your Markdown files hosted on your VCS platform in Github's render style
     - `checkout`: Renders a small badge-like box with a link to the document and the date of the last commit
     - `history`:  Renders a `<h2>` section with the last commit dates, messages and authors
+
+Additionally, there's an enclosing shortcode `[git-add-css]` which adds a `<div id="git-add-css" class="<attribute>"` to wrap its contents. That way you can manipulate the style freely with additional CSS classes. Follow these steps:
+
+1. Add a CSS file to your WordPress theme by copying a CSS file to your theme's root folder, which contains some classes
+2. Enqueue the CSS file by adding `wp_enqueue_style ('git-markdown-style', get_template_directory_uri().'/my-style.css');` to the theme's `functions.php`
+3. Add the enclosing shortcode to your post, e.g.:
+
+```
+[git-add-css classes="class1 class2 class3"]
+    other shortcodes...
+[/git-add-css]
+```
     
 ### Attributes
 
@@ -64,9 +78,46 @@ We publish our own tutorials with this plugin: https://gis-ops.com/tutorials/.
 
 `[git-bitbucket-checkout user=nilsnolde token=hxsCL7LpnEp55FH9qK url="https://bitbucket.org/nilsnolde/test-wp-plugin/src/master/README.md"]`
 
-#### Display commit history from Github
+#### Display commit history from Gitlab
 
 `git-gitlab-history limit=5 user=nilsnolde token=hxsCL7LpnEp55FH9qK url="https://gitlab.com/nilsnolde/esy-osm-pbf/-/blob/master/README.md"]`
+
+#### Use additional CSS classes to style
+
+The following example will put a dashed box around the whole post:
+
+```
+[git-add-css classes="md-dashedbox"]
+    [git-github-checkout url="https://github.com/gis-ops/tutorials/blob/master/qgis/QGIS_SimplePlugin.md"]
+    [git-github-markdown url="https://github.com/gis-ops/tutorials/blob/master/qgis/QGIS_SimplePlugin.md"]
+    [git-github-history url="https://github.com/gis-ops/tutorials/blob/master/qgis/QGIS_SimplePlugin.md"]
+[/git-add-css]
+```
+
+With the following CSS file contents enqueued to your theme:
+
+```css
+div.md_dashedbox {
+    position: relative;
+    font-size: 0.75em;
+    border: 3px dashed;
+    padding: 10px;
+    margin-bottom:15px
+}
+
+div.md_dashedbox div.markdown-github {
+    color:white;
+    line-height: 20px;
+    padding: 0px 5px;
+    position: absolute;
+    background-color: #345;
+    top: -3px;
+    left: -3px;
+    text-transform:none;
+    font-size:1em;
+    font-family: "Helvetica Neue",Helvetica,Arial,sans-serif;
+}
+```
 
 ## Installation
 
