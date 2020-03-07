@@ -36,10 +36,12 @@ class GithubLoader extends BaseLoader {
                 'ref' => $this->branch
             ),
             'headers' => array(
-                'Accept' => 'application/vnd.github.VERSION.raw',
-                'Authorization' => $this->get_auth_header()
+                'Accept' => 'application/vnd.github.VERSION.raw'
             )
         );
+        if (!empty($this->token)) {
+            $args['headers']['Authorization'] = $this->get_auth_header();
+        }
         $get_url = "https://api.$this->domain/repos/$this->owner/$this->repo/contents/$this->file_path";
 
         $wp_remote = wp_remote_get($get_url, $args);
@@ -59,10 +61,12 @@ class GithubLoader extends BaseLoader {
                 'sha' => $this->branch
             ),
             'headers' => array(
-                'Accept' => 'application/json',
-                'Authorization' => $this->get_auth_header()
+                'Accept' => 'application/json'
             )
         );
+        if (!empty($this->token)) {
+            $args['headers']['Authorization'] = $this->get_auth_header();
+        }
         $get_url = "https://api.$this->domain/repos/$this->owner/$this->repo/commits";
 
         $wp_remote = wp_remote_get($get_url, $args);

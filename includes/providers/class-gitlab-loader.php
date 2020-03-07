@@ -34,11 +34,11 @@ class GitlabLoader extends BaseLoader {
         $args = array(
             'body' => array(
                 'ref' => $this->branch
-            ),
-            'headers' => array(
-                'Authorization' => $this->get_auth_header()
             )
         );
+        if (!empty($this->token)) {
+            $args['headers']['Authorization'] = $this->get_auth_header();
+        }
         $get_url = "https://$this->domain/api/v4/projects/$this->owner/repository/files/$this->file_path/raw";
 
         $wp_remote = wp_remote_get($get_url, $args);
@@ -82,10 +82,12 @@ class GitlabLoader extends BaseLoader {
                 'ref_name' => $this->branch
             ),
             'headers' => array(
-                'Accept' => 'application/json',
-                'Authorization' => $this->get_auth_header()
+                'Accept' => 'application/json'
             )
         );
+        if (!empty($this->token)) {
+            $args['headers']['Authorization'] = $this->get_auth_header();
+        }
         $get_url = "https://$this->domain/api/v4/projects/$this->owner/repository/commits";
 
         $wp_remote = wp_remote_get($get_url, $args);
