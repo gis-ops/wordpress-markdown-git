@@ -31,11 +31,10 @@ class BitbucketLoader extends BaseLoader {
     }
 
     protected function get_markdown() {
-        $args = array(
-            'headers' => array(
-                'Authorization' => $this->get_auth_header()
-            )
-        );
+        $args = array();
+        if (!empty($this->token)) {
+            $args['headers']['Authorization'] = $this->get_auth_header();
+        };
         $get_url = "https://api.$this->domain/2.0/repositories/$this->owner/$this->repo/src/$this->branch/$this->file_path";
 
         $wp_remote = wp_remote_get($get_url, $args);
@@ -54,10 +53,12 @@ class BitbucketLoader extends BaseLoader {
                 'path' => $this->file_path
             ),
             'headers' => array(
-                'Accept' => 'application/json',
-                'Authorization' => $this->get_auth_header()
+                'Accept' => 'application/json'
             )
         );
+        if (!empty($this->token)) {
+            $args['headers']['Authorization'] = $this->get_auth_header();
+        }
         $get_url = "https://api.$this->domain/2.0/repositories/$this->owner/$this->repo/commits/$this->branch";
 
         $wp_remote = wp_remote_get($get_url, $args);
