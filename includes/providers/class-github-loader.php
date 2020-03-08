@@ -4,6 +4,12 @@ class GithubLoader extends BaseLoader {
 
     protected static $PROVIDER = 'Github';
 
+    public function __construct()
+    {
+        parent::__construct();
+        add_shortcode("git-github-jupyter", array($this, 'doJupyter'));
+    }
+
     protected function extract_history_from_commit_json(&$commit) {
         return array(
             $commit['commit']['author']['name'],
@@ -30,7 +36,7 @@ class GithubLoader extends BaseLoader {
         return array($datetime, $response_code);
     }
 
-    protected function get_markdown() {
+    protected function get_document() {
         $args = array(
             'body' => array(
                 'ref' => $this->branch

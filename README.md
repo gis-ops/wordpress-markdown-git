@@ -1,16 +1,17 @@
 # WordPress Plugin - Publish Documents from Git
 
-This WordPress Plugin lets you easily publish, collaborate on and version control your \[**Markdown**\] documents directly from your favorite remote Git platform, even if it's self-hosted.
+This WordPress Plugin lets you easily publish, collaborate on and version control your \[**Markdown, Jupyter notebook**\] documents directly from your favorite remote Git platform, **even if it's self-hosted**.
 
 The advantages are:
 
-- Write Markdown in your favorite editor and just push to your remote repository to update your blog instantly
+- Write documents in your favorite editor and just push to your remote repository to update your blog instantly
 - Use the power of version control: publish different versions of the document in different posts, i.e. from another branch or commit than latest `master`
 - Easy to update by external users via pull requests, minimizes the chance of stale tutorials 
 
 The following document types are currently supported:
 
 - Markdown
+- Jupyter notebooks (**only Github supported**)
 
 The following platforms are currently supported:
 
@@ -35,6 +36,7 @@ The document-specific shortcode follow a pattern of `[git-<platform>-<action>]`,
     - `gitlab`: if you use Gitlab as your VCS platform
 - `<action>` can be one of
     - `markdown`: Render your Markdown files hosted on your VCS platform in Github's rendering style
+    - `jupyter`: Render your Jupyter notebook hosted on your VCS platfrom (**only Github supported**)
     - `checkout`: Renders a small badge-like box with a link to the document and the date of the last commit
     - `history`:  Renders a `<h2>` section with the last commit dates, messages and authors
 
@@ -56,7 +58,7 @@ Additionally, there's an enclosing shortcode `[git-add-css]` which adds a `<div 
     
 ### Attributes
 
-Each shortcode takes a few attributes, indicating if it's required for pubic or private repositories:
+Each shortcode takes a few attributes, indicating if it's required for public or private repositories:
 
 | Attribute | Action                   | Public repo                   | Private repo                  | Type    | Description                                                                                                   |
 |-----------|--------------------------|-------------------------------|-------------------------------|---------|---------------------------------------------------------------------------------------------------------------|

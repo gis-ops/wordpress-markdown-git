@@ -30,7 +30,7 @@ class BitbucketLoader extends BaseLoader {
         return array($datetime, $response_code);
     }
 
-    protected function get_markdown() {
+    protected function get_document() {
         $args = array();
         if (!empty($this->token)) {
             $args['headers']['Authorization'] = $this->get_auth_header();
