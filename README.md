@@ -11,7 +11,7 @@ The advantages are:
 The following document types are currently supported:
 
 - Markdown
-- Jupyter notebooks (**only Github supported**)
+- Jupyter notebooks (**only for public repositories**)
 
 The following platforms are currently supported:
 
@@ -36,7 +36,7 @@ The document-specific shortcode follow a pattern of `[git-<platform>-<action>]`,
     - `gitlab`: if you use Gitlab as your VCS platform
 - `<action>` can be one of
     - `markdown`: Render your Markdown files hosted on your VCS platform in Github's rendering style
-    - `jupyter`: Render your Jupyter notebook hosted on your VCS platfrom (**only Github supported**)
+    - `jupyter`: Render your Jupyter notebook hosted on your VCS platfrom (**only for public repositories**)
     - `checkout`: Renders a small badge-like box with a link to the document and the date of the last commit
     - `history`:  Renders a `<h2>` section with the last commit dates, messages and authors
 
@@ -45,7 +45,7 @@ The document-specific shortcode follow a pattern of `[git-<platform>-<action>]`,
 Additionally, there's an enclosing shortcode `[git-add-css]` which adds a `<div id="git-add-css" class="<classes_attribute>"` to wrap its contents. That way you can manipulate the style freely with additional CSS classes. Follow these steps:
 
 1. Add a CSS file to your theme's root folder, which contains some classes, e.g. `class1`, `class2`, `class3`
-2. Enqueue the CSS file by adding `wp_enqueue_style ('git-markdown-style', get_template_directory_uri().'/my-style.css');` to the theme's `functions.php`
+2. Enqueue the CSS file by adding `wp_enqueue_style('my-style', get_template_directory_uri().'/my-style.css');` to the theme's `functions.php`
 3. Add the enclosing `git-add-css` shortcode to your post with the custom CSS classes in the `classes` attribute, e.g.:
 
 ```
@@ -88,15 +88,23 @@ We publish our own tutorials with this plugin: https://gis-ops.com/tutorials/.
 
 #### Publish Markdown from Github
 
-`[git-github-markdown user=nilsnolde token=hxsCL7LpnEp55FH9qK url="https://github.com/gis-ops/tutorials/blob/master/qgis/QGIS_SimplePlugin.md"]`
+`[git-github-markdown url="https://github.com/gis-ops/tutorials/blob/master/qgis/QGIS_SimplePlugin.md"]`
+
+#### Publish Jupyter notebook from Github
+
+`[git-github-jupyter url="https://github.com/GIScience/openrouteservice-examples/blob/master/python/ortools_pubcrawl.ipynb"]`
+
+#### Publish from a private repository
+
+`[git-bitbucket-jupyter user=nilsnolde token=3292_2p3a_84-2af url="https://bitbucket.org/nilsnolde/test-wp-plugin/src/master/README.md"]`
 
 #### Display last commit and document URL from Bitbucket
 
-`[git-bitbucket-checkout user=nilsnolde token=hxsCL7LpnEp55FH9qK url="https://bitbucket.org/nilsnolde/test-wp-plugin/src/master/README.md"]`
+`[git-bitbucket-checkout url="https://bitbucket.org/nilsnolde/test-wp-plugin/src/master/README.md"]`
 
 #### Display commit history from Gitlab
 
-`git-gitlab-history limit=5 user=nilsnolde token=hxsCL7LpnEp55FH9qK url="https://gitlab.com/nilsnolde/esy-osm-pbf/-/blob/master/README.md"]`
+`git-gitlab-history limit=5 url="https://gitlab.com/nilsnolde/esy-osm-pbf/-/blob/master/README.md"]`
 
 #### Use additional CSS classes to style
 

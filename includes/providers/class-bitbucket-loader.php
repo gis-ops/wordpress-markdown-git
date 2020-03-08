@@ -44,6 +44,13 @@ class BitbucketLoader extends BaseLoader {
         return array($response_body, $response_code);
     }
 
+    protected function get_nbviewer_url()
+    {
+        $url = "https://nbviewer.jupyter.org/urls/$this->domain/$this->owner/$this->repo/raw/$this->branch/$this->file_path";
+
+        return $url;
+    }
+
     /**
      * Helper function used to get commit history and last commit date
      */

@@ -21,6 +21,7 @@ abstract class BaseLoader {
         }
         $provider = strtolower(static::$PROVIDER);
         add_shortcode("git-$provider-markdown", array($this, 'doMarkdown'));
+        add_shortcode("git-$provider-jupyter", array($this, 'doJupyter'));
         add_shortcode("git-$provider-checkout", array($this, 'doCheckout'));
         add_shortcode("git-$provider-history", array($this, 'doHistory'));
     }
@@ -58,6 +59,11 @@ abstract class BaseLoader {
     abstract protected function extract_history_from_commit_json(&$commit);
 
     /**
+     * The API specific function to retrieve the URL needed to use with https://nbviewer.jupyter.org
+     */
+    abstract protected function get_nbviewer_url();
+
+    /**
      * The callback function for the "jupyter" shortcode action. Currently only available for Github
      * due to nbviewer.jupyter.org limitations
      *
@@ -67,9 +73,7 @@ abstract class BaseLoader {
      */
     public function doJupyter($sc_attrs)
     {
-        $domain_exploded = explode('.', $this->domain);
-        $domain_no_tld = $domain_exploded[count($domain_exploded) - 2];
-        $get_url = "https://nbviewer.jupyter.org/$domain_no_tld/$this->owner/$this->repo/blob/$this->branch/$this->file_path";
+        $get_url = $this->get_nbviewer_url();
 
         $wp_remote = wp_remote_get($get_url);
         $html = wp_remote_retrieve_body($wp_remote);

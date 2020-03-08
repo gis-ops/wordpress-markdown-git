@@ -48,6 +48,13 @@ class GitlabLoader extends BaseLoader {
         return array($response_body, $response_code);
     }
 
+    protected function get_nbviewer_url()
+    {
+        $url = "https://nbviewer.jupyter.org/urls/$this->domain/$this->owner/$this->repo/-/raw/$this->branch/$this->file_path";
+
+        return $url;
+    }
+
     protected function set_repo_details($url)
     {
         $url_parsed = parse_url($url);

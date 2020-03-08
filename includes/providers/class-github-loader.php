@@ -4,12 +4,6 @@ class GithubLoader extends BaseLoader {
 
     protected static $PROVIDER = 'Github';
 
-    public function __construct()
-    {
-        parent::__construct();
-        add_shortcode("git-github-jupyter", array($this, 'doJupyter'));
-    }
-
     protected function extract_history_from_commit_json(&$commit) {
         return array(
             $commit['commit']['author']['name'],
@@ -55,6 +49,15 @@ class GithubLoader extends BaseLoader {
         $response_code = wp_remote_retrieve_response_code($wp_remote);
 
         return array($response_body, $response_code);
+    }
+
+    protected function get_nbviewer_url()
+    {
+        $domain_exploded = explode('.', $this->domain);
+        $domain_no_tld = $domain_exploded[count($domain_exploded) - 2];
+        $url = "https://nbviewer.jupyter.org/$domain_no_tld/$this->owner/$this->repo/blob/$this->branch/$this->file_path";
+
+        return $url;
     }
 
     /**
