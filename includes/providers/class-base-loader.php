@@ -190,6 +190,9 @@ abstract class BaseLoader {
     public function doHistory($sc_attrs)
     {
         list($url, $limit) = $this->extract_attributes($sc_attrs);
+        if (empty($limit)) {
+            $limit = 5;
+        }
         $this->set_repo_details($url);
 
         $html_string = '<hr style="margin: 20px 0; width: 70%; border-top: 1.5px solid #aaaaaa;" /><article class="markdown-body"><h2><strong><a target="_blank" href="' . $url . '">Post history - Last 5 commits</a></strong></h2>';
