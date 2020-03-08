@@ -20,7 +20,7 @@ abstract class BaseLoader {
             throw new LogicException("Class property PROVIDER must be set for " . static::class);
         }
         $provider = strtolower(static::$PROVIDER);
-        add_shortcode("git-$provider-markdown", array($this, 'doPost'));
+        add_shortcode("git-$provider-markdown", array($this, 'doMarkdown'));
         add_shortcode("git-$provider-checkout", array($this, 'doCheckout'));
         add_shortcode("git-$provider-history", array($this, 'doHistory'));
     }
@@ -31,7 +31,7 @@ abstract class BaseLoader {
      *
      * @return mixed array of response body and HTTP response code
      */
-    abstract protected function get_markdown();
+    abstract protected function get_document();
 
     /**
      * The API specific function to return the raw date of the last commit of the file and HTTP response code.
@@ -58,25 +58,67 @@ abstract class BaseLoader {
     abstract protected function extract_history_from_commit_json(&$commit);
 
     /**
-     * The callback function for the "post" shortcode action.
+     * The callback function for the "jupyter" shortcode action. Currently only available for Github
+     * due to nbviewer.jupyter.org limitations
      *
      * @param $sc_attrs array Shortcode attributes
-     * @return string HTML of the whole Markdown document processed by Github's markdown endpoint
+     * @return string HTML of the whole Jupyter notebook processed by nbviewer.jupyter.org
+     *
      */
-    public function doPost($sc_attrs)
+    public function doJupyter($sc_attrs)
     {
-        # Normalize shortcode attributes to lower case
-        $sc_attrs = array_change_key_case((array)$sc_attrs, CASE_LOWER);
+        $domain_exploded = explode('.', $this->domain);
+        $domain_no_tld = $domain_exploded[count($domain_exploded) - 2];
+        $get_url = "https://nbviewer.jupyter.org/$domain_no_tld/$this->owner/$this->repo/blob/$this->branch/$this->file_path";
 
-        list($url, $limit) = $this->extract_attributes($sc_attrs);
-        $this->set_repo_details($url);
-        list($raw_markdown, $response_code) = $this->get_markdown();
+        $wp_remote = wp_remote_get($get_url);
+        $html = wp_remote_retrieve_body($wp_remote);
+        $response_code = wp_remote_retrieve_response_code($wp_remote);
+
+        $dom = new DOMDocument;
+        libxml_use_internal_errors(true);
+        $dom->loadHTML($html);
+        $node = $dom->getElementById('notebook-container');
+        if ($node) {
+            $inner_html = '';
+            $children = $node->childNodes;
+
+            foreach($children as $child) {
+                $inner_html.= $node->ownerDocument->saveHTML($child);
+            }
+        } else {
+            $response_code = 404;
+        }
 
         switch ($response_code) {
             case 200:
                 break;
             case 404:
-                $raw_markdown = "# 404 - Not found\nPost not found on $url";
+                $inner_html = "<h1>404 - Not found</h1>Document not found";
+                break;
+            default:
+                $inner_html = "<h1>500 - Server Error</h1>";
+        }
+
+        return '<div class="nbconvert">' . $inner_html . '</div>';
+    }
+
+    /**
+     * The callback function for the "markdown" shortcode action.
+     *
+     * @param $sc_attrs array Shortcode attributes
+     * @return string HTML of the whole Markdown document processed by Github's markdown endpoint
+     *
+     */
+    public function doMarkdown($sc_attrs)
+    {
+        list($raw_markdown, $response_code) = $this->get_raw_document($sc_attrs);
+
+        switch ($response_code) {
+            case 200:
+                break;
+            case 404:
+                $raw_markdown = "# 404 - Not found\nDocument not found.";
                 break;
             case 401:
                 $raw_markdown = "# 401 - Bad credentials.\nPlease review access token for user " . $this->user;
@@ -96,7 +138,7 @@ abstract class BaseLoader {
         $response = wp_remote_post(self::$GITHUB_MARKDOWN_API, $args);
         $html_body = wp_remote_retrieve_body($response);
 
-        return '<div>' . $html_body . '</div>';
+        return '<div class="markdown-body">' . $html_body . '</div>';
     }
 
     /**
@@ -107,9 +149,6 @@ abstract class BaseLoader {
      */
     public function doCheckout($sc_attrs)
     {
-        # Normalize shortcode attributes to lower case
-        $sc_attrs = array_change_key_case((array)$sc_attrs, CASE_LOWER);
-
         list($url, $limit) = $this->extract_attributes($sc_attrs);
         $this->set_repo_details($url);
 
@@ -146,9 +185,6 @@ abstract class BaseLoader {
      */
     public function doHistory($sc_attrs)
     {
-        # Normalize shortcode attributes to lower case
-        $sc_attrs = array_change_key_case((array)$sc_attrs, CASE_LOWER);
-
         list($url, $limit) = $this->extract_attributes($sc_attrs);
         $this->set_repo_details($url);
 
@@ -206,6 +242,15 @@ abstract class BaseLoader {
 
     }
 
+    private function get_raw_document($sc_attrs)
+    {
+        list($url, $limit) = $this->extract_attributes($sc_attrs);
+        $this->set_repo_details($url);
+        list($raw_document, $response_code) = $this->get_document();
+
+        return array($raw_document, $response_code);
+    }
+
     /**
      * Extracts the attributes from a shortcode. All attributes of all shortcodes are extracted,
      * but not necessarily passed, so they default to an empty string.
@@ -216,6 +261,7 @@ abstract class BaseLoader {
      * @return array parsed url and limit
      */
     private function extract_attributes($attrs) {
+        $attrs = array_change_key_case((array)$attrs, CASE_LOWER);
         extract(shortcode_atts(array(
                 'url' => "",
                 'user' => "",

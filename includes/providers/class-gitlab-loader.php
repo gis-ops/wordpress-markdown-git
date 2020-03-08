@@ -30,7 +30,7 @@ class GitlabLoader extends BaseLoader {
         return array($datetime, $response_code);
     }
 
-    protected function get_markdown() {
+    protected function get_document() {
         $args = array(
             'body' => array(
                 'ref' => $this->branch

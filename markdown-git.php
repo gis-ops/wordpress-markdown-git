@@ -28,10 +28,6 @@ foreach($providers as $provider) {
     $instance = new $class();
 }
 
-# Enqueue Github and plugin stylesheet
-add_action('wp_enqueue_style', wp_enqueue_style( 'github_markdown', plugins_url( 'css/github-markdown.css', __FILE__ )));
-add_action('wp_enqueue_style', wp_enqueue_style( 'markdown_git', plugins_url( 'css/markdown-git.css', __FILE__ )));
-
 # Add git-classes shortcode to be used as enclosing
 add_shortcode('git-add-css', 'add_enclosing_classes');
 function add_enclosing_classes($sc_attrs, $content) {
@@ -47,3 +43,8 @@ function add_enclosing_classes($sc_attrs, $content) {
 
     return $new_content;
 }
+
+# Enqueue Github and plugin stylesheet
+add_action('wp_enqueue_style', wp_enqueue_style( 'markdown_git', plugins_url( 'css/markdown-git.css', __FILE__ )));
+add_action('wp_enqueue_style', wp_enqueue_style( 'github_markdown', plugins_url( 'css/github-markdown.css', __FILE__ ), 'markdown-git'));
+add_action('wp_enqueue_style', wp_enqueue_style( 'nbconvert_git', plugins_url( 'css/nbconvert.css', __FILE__ ), 'markdown-git'));
