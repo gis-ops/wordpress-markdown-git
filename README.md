@@ -23,6 +23,9 @@ The following platforms are currently supported:
 ### Shortcodes
 
 The plugin features a variety of shortcodes. 
+
+
+#### Publish documents
  
 The document-specific shortcode follow a pattern of `[git-<platform>-<action>]`, where
 
@@ -31,15 +34,17 @@ The document-specific shortcode follow a pattern of `[git-<platform>-<action>]`,
     - `bitbucket`: if you use Bitbucket as your VCS platform
     - `gitlab`: if you use Gitlab as your VCS platform
 - `<action>` can be one of
-    - `markdown`: Render your Markdown files hosted on your VCS platform in Github's render style
+    - `markdown`: Render your Markdown files hosted on your VCS platform in Github's rendering style
     - `checkout`: Renders a small badge-like box with a link to the document and the date of the last commit
     - `history`:  Renders a `<h2>` section with the last commit dates, messages and authors
 
-Additionally, there's an enclosing shortcode `[git-add-css]` which adds a `<div id="git-add-css" class="<attribute>"` to wrap its contents. That way you can manipulate the style freely with additional CSS classes. Follow these steps:
+#### Manipulate rendering style
+
+Additionally, there's an enclosing shortcode `[git-add-css]` which adds a `<div id="git-add-css" class="<classes_attribute>"` to wrap its contents. That way you can manipulate the style freely with additional CSS classes. Follow these steps:
 
 1. Add a CSS file to your theme's root folder, which contains some classes, e.g. `class1`, `class2`, `class3`
 2. Enqueue the CSS file by adding `wp_enqueue_style ('git-markdown-style', get_template_directory_uri().'/my-style.css');` to the theme's `functions.php`
-3. Add the enclosing `git-add-css` shortcode to your post, e.g.:
+3. Add the enclosing `git-add-css` shortcode to your post with the custom CSS classes in the `classes` attribute, e.g.:
 
 ```
 [git-add-css classes="class1 class2 class3"]
@@ -51,20 +56,21 @@ Additionally, there's an enclosing shortcode `[git-add-css]` which adds a `<div 
     
 ### Attributes
 
-Each shortcode takes a few attributes:
+Each shortcode takes a few attributes, indicating if it's required for pubic or private repositories:
 
 | Attribute | Action                   | Public repo                   | Private repo                  | Type    | Description                                                                                                   |
 |-----------|--------------------------|-------------------------------|-------------------------------|---------|---------------------------------------------------------------------------------------------------------------|
-| url       | all except `git-add-css` | :ballot_box_with_check:       | :ballot_box_with_check:       | string  | The browser URL of the document, e.g. https://github.com/gis-ops/wordpress-markdown-git/blob/master/README.md |
-| user      | all except `git-add-css` | :negative_squared_cross_mark: | :ballot_box_with_check:       | string  | The **user name** (not email) of an authorized user                                                           |
-| token     | all except `git-add-css` | :negative_squared_cross_mark: | :ballot_box_with_check:       | string  | The access token/app password for the authorized user                                                         |
-| limit     | history                  | :negative_squared_cross_mark: | :negative_squared_cross_mark: | integer | Limits the history of commits to this number                                                                  |                                                                |                                                               |
+| `url`       | all except `git-add-css` | :ballot_box_with_check:       | :ballot_box_with_check:       | string  | The browser URL of the document, e.g. https://github.com/gis-ops/wordpress-markdown-git/blob/master/README.md |
+| `user`      | all except `git-add-css` | :negative_squared_cross_mark: | :ballot_box_with_check:       | string  | The **user name** (not email) of an authorized user                                                           |
+| `token`     | all except `git-add-css` | :negative_squared_cross_mark: | :ballot_box_with_check:       | string  | The access token/app password for the authorized user                                                         |
+| `limit`     | `history`                | :negative_squared_cross_mark: | :negative_squared_cross_mark: | integer | Limits the history of commits to this number                                                                  |
+| `classes`   | `git-add-css`            | :ballot_box_with_check:       | :ballot_box_with_check:       | string  | The additional CSS classes to render the content with                                                         |
 
 #### `Token` authorization
 
-You only **need to** authorize via `user` and `token` if you intend to publish from a private repository.
+You **need to** authorize via `user` and `token` if you intend to publish from a private repository.
  
-However, keep in mind that some platforms have stricter API limits for anonymous requests which are greatly extended if you provide your credentials.
+However, keep in mind that some platforms have stricter API limits for anonymous requests which are greatly extended if you provide your credentials. So even for public repos it could make sense.
 
 How to generate the `token` depends on your platform:
 
