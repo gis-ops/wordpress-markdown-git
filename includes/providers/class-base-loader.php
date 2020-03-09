@@ -65,7 +65,9 @@ abstract class BaseLoader {
 
     /**
      * The callback function for the "jupyter" shortcode action. Currently only available for Github
-     * due to nbviewer.jupyter.org limitations
+     * due to nbviewer.jupyter.org limitations.
+     *
+     * Original implementation: https://github.com/ghandic/nbconvert.
      *
      * @param $sc_attrs array Shortcode attributes
      * @return string HTML of the whole Jupyter notebook processed by nbviewer.jupyter.org
@@ -147,6 +149,8 @@ abstract class BaseLoader {
 
     /**
      * The callback function for the "checkout" shortcode action.
+     *
+     * Adapted from https://github.com/ghandic/nbconvert.
      *
      * @param $sc_attrs array Shortcode attributes
      * @return string HTML for the checkout span

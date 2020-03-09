@@ -70,7 +70,7 @@ Each shortcode takes a few attributes, indicating if it's required for public or
 
 #### `Token` authorization
 
-You **need to** authorize via `user` and `token` if you intend to publish from a private repository.
+You **need to** authorize via `user` and `token` if you intend to publish from a private repository. You **don't need to** authorize if the repository is open.
  
 However, keep in mind that some platforms have stricter API limits for anonymous requests which are greatly extended if you provide your credentials. So even for public repos it could make sense.
 
@@ -158,7 +158,7 @@ The newest version, which might not have made it into the plugin store yet, can 
 - [`github-markdown-css`](https://github.com/sindresorhus/github-markdown-css): CSS project for the Github flavored Markdown style, License MIT
     - This plugin maintains a copy of the CSS file
 - [`nbconvert`](https://github.com/ghandic/nbconvert): Wordpress plugin to convert Jupyter notebooks into blog posts, License MIT
-    - The idea for this plugin was mainly inspired by `nbconvert` and borrows some of the HTML and CSS
+    - The idea for this plugin was mainly inspired by `nbconvert` and borrows some of the HTML and the CSS for Jupyter notebooks
 
 ## Sponsors
 

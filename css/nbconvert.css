@@ -1,3 +1,5 @@
+/*Adapted from https://github.com/ghandic/nbconvert */
+
 div.nbconvert iframe {
     padding-top: 1rem;
 }
