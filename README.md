@@ -68,6 +68,14 @@ Each shortcode takes a few attributes, indicating if it's required for public or
 | `limit`     | `history`                | :negative_squared_cross_mark: | :negative_squared_cross_mark: | integer | Limits the history of commits to this number. Default 5.                                                                |
 | `classes`   | `git-add-css`            | :ballot_box_with_check:       | :ballot_box_with_check:       | string  | The additional CSS classes to render the content with                                                         |
 
+#### Global attributes
+
+Since most attributes will be the same across the entire system, this plugin offers the possibility to set all attributes globally except for `url`:
+
+In the menu *Plugins* ► *Plugin Editor*, choose "Document Git" and enter your preferences in the `includes/config.json`.
+
+**Note**, setting the attributes manually in the shortcode has always precedence over any settings in `includes/config.json`.
+
 #### `Token` authorization
 
 You **need to** authorize via `user` and `token` if you intend to publish from a private repository. You **don't need to** authorize if the repository is open.
