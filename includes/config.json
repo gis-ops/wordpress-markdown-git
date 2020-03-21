@@ -1,0 +1,16 @@
+{
+  "limit": 5,
+  "classes": "",
+  "Github": {
+    "user": "",
+    "token": ""
+  },
+  "Bitbucket": {
+    "user": "",
+    "token": ""
+  },
+  "Gitlab": {
+    "user": "",
+    "token": ""
+  }
+}

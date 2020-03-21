@@ -1,5 +1,7 @@
 <?php
 
+include_once('../../markdown-git.php');
+
 abstract class BaseLoader {
     protected static $GITHUB_MARKDOWN_API = 'https://api.github.com/markdown';
     protected static $PROVIDER;  # Needs to be set for every subclass
@@ -157,7 +159,7 @@ abstract class BaseLoader {
      */
     public function doCheckout($sc_attrs)
     {
-        list($url, $limit) = $this->extract_attributes($sc_attrs);
+        $url = $this->extract_attributes($sc_attrs);
         $this->set_repo_details($url);
 
         list($datetime_str, $response_code) = $this->get_checkout_datetime();
@@ -193,9 +195,9 @@ abstract class BaseLoader {
      */
     public function doHistory($sc_attrs)
     {
-        list($url, $limit) = $this->extract_attributes($sc_attrs);
-        if (empty($limit)) {
-            $limit = 5;
+        $url = $this->extract_attributes($sc_attrs);
+        if (empty($this->limit)) {
+            $this->limit = 5;
         }
         $this->set_repo_details($url);
 
@@ -205,7 +207,7 @@ abstract class BaseLoader {
 
         $i = 0;
         foreach ($commits_json as $item) {
-            if ($i == intval($limit)) break;
+            if ($i == intval($this->limit)) break;
             list($name, $date, $message) =  $this->extract_history_from_commit_json($item);
             $html_string .= "<p>";
             $html_string .= "<strong>" . date('d/m/Y H:i:s', strtotime($date)) . "</strong> - $message";
@@ -255,7 +257,7 @@ abstract class BaseLoader {
 
     private function get_raw_document($sc_attrs)
     {
-        list($url, $limit) = $this->extract_attributes($sc_attrs);
+        $url = $this->extract_attributes($sc_attrs);
         $this->set_repo_details($url);
         list($raw_document, $response_code) = $this->get_document();
 
@@ -269,9 +271,10 @@ abstract class BaseLoader {
      * It also sets the class attributes "user" and "token".
      *
      * @param $attrs array Attributes of the shortcode
-     * @return array parsed url and limit
+     * @return string parsed url
      */
     private function extract_attributes($attrs) {
+
         $attrs = array_change_key_case((array)$attrs, CASE_LOWER);
         extract(shortcode_atts(array(
                 'url' => "",
@@ -282,9 +285,10 @@ abstract class BaseLoader {
             )
         );
 
-        $this->user = $user;
-        $this->token = $token;
+        $this->user = ($user === '') ? (MARKDOWNGIT_CONFIG[static::$PROVIDER]["user"]) : ($user);
+        $this->token = ($token === '') ? (MARKDOWNGIT_CONFIG[static::$PROVIDER]["token"]) : ($token);
+        $this->limit = ($limit === '') ? (MARKDOWNGIT_CONFIG["limit"]) : ($limit);
 
-        return array($url, $limit);
+        return $url;
     }
 }
