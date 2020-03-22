@@ -1,11 +1,12 @@
 <?php
 /**
- * Plugin Name: Markdown Git
- * Description: Add rendered Markdown files to any of your posts/pages directly from a remote Git repository of your favorite platform via shortcodes.
+ * Plugin Name: Documents from Git
+ * Plugin URI: https://github.com/gis-ops/wordpress-markdown-git
+ * Description: Render various document formats in any post/page directly from a remote Git repository of your favorite platform via shortcodes. Currently supported: Markdown, Jupyter Notebooks.
  * Version:     0.1
- * Author:      Nils Nolde
- * Author URI:  https://github.com/nilsnolde
- * Text Domain: markdown-git
+ * Author:      GIS-OPS UG
+ * Author URI:  https://gis-ops.com
+ * Text Domain: documents-git
  * License: GPLv3
  *
  */

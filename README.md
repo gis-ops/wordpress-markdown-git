@@ -25,10 +25,9 @@ The following platforms are currently supported:
 
 The plugin features a variety of shortcodes. 
 
-
 #### Publish documents
  
-The document-specific shortcode follow a pattern of `[git-<platform>-<action>]`, where
+The document-specific shortcodes follow a pattern of `[git-<platform>-<action>]`, where
 
 - `<platform>` can be one of
     - `github`: if you use Github as your VCS platform
@@ -72,7 +71,7 @@ Each shortcode takes a few attributes, indicating if it's required for public or
 
 Since most attributes will be the same across the entire system, this plugin offers the possibility to set all attributes globally except for `url`:
 
-In the menu *Plugins* ► *Plugin Editor*, choose "Document Git" and enter your preferences in the `includes/config.json`.
+In the menu *Plugins* ► *Plugin Editor*, choose "Documents from Git" and enter your preferences in the `includes/config.json`.
 
 **Note**, setting the attributes manually in the shortcode has always precedence over any settings in `includes/config.json`.
 

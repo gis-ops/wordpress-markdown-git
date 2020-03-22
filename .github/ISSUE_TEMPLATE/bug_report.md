@@ -15,7 +15,7 @@ Documents for Git:
 <!-- A clear and concise description of what the bug is. -->
 
 **Paste the shortcode and the contents of config.json**
-<!-- Go to *Plugins* ► *Plugin Editor*, choose "Documents for Git" and copy the contents of `includes/config.json`. -->
+<!-- Go to *Plugins* ► *Plugin Editor*, choose "Documents from Git" and copy the contents of `includes/config.json`. -->
 `shortcode`
 
 ```

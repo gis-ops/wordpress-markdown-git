@@ -1,6 +1,6 @@
 <?php
 
-include_once('../../markdown-git.php');
+include_once('../../documents-git.php');
 
 abstract class BaseLoader {
     protected static $GITHUB_MARKDOWN_API = 'https://api.github.com/markdown';
@@ -268,7 +268,7 @@ abstract class BaseLoader {
      * Extracts the attributes from a shortcode. All attributes of all shortcodes are extracted,
      * but not necessarily passed, so they default to an empty string.
      *
-     * It also sets the class attributes "user" and "token".
+     * It also sets the class attributes "user", "token" and "limit" from config.json or shortcode attribute.
      *
      * @param $attrs array Attributes of the shortcode
      * @return string parsed url

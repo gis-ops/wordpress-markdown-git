@@ -1,10 +1,15 @@
 === Documents from Git ===
-Contributors: Nils Nolde
-Tags: markdown,github,bitbucket,gitlab,vcs
+Contributors: nilsnolde
+Plugin Name: Documents from Git
+Plugin URI: https://github.com/gis-ops/wordpress-markdown-git
+Tags: markdown,jupyter,notebook,github,bitbucket,gitlab,vcs
+Author URI: https://gis-ops.com
+Author: GIS-OPS UG
 Requires at least: 5.0.0
 Tested up to: 5.3.2
-Requires PHP: 5.6
+Requires PHP: 7.0
 Stable tag: 1.0.0
+Version: 1.0.0
 License: GPLv3
 License URI: https://github.com/gis-ops/wordpress-markdown-git/blob/master/LICENSE
 
@@ -27,7 +32,7 @@ The advantages are:
 The following document types are currently supported:
 
 - Markdown
-- Jupyter notebooks (**only Github supported**)
+- Jupyter notebooks (**only for public repositories**)
 
 The following platforms are currently supported:
 
@@ -41,10 +46,9 @@ The following platforms are currently supported:
 
 The plugin features a variety of shortcodes.
 
-
 #### Publish documents
 
-The document-specific shortcode follow a pattern of `[git-<platform>-<action>]`, where
+The document-specific shortcodes follow a pattern of `[git-<platform>-<action>]`, where
 
 - `<platform>` can be one of
     - `github`: if you use Github as your VCS platform
@@ -52,7 +56,7 @@ The document-specific shortcode follow a pattern of `[git-<platform>-<action>]`,
     - `gitlab`: if you use Gitlab as your VCS platform
 - `<action>` can be one of
     - `markdown`: Render your Markdown files hosted on your VCS platform in Github's rendering style
-    - `jupyter`: Render your Jupyter notebook hosted on your VCS platfrom (**only Github supported**)
+    - `jupyter`: Render your Jupyter notebook hosted on your VCS platfrom (**only for public repositories**)
     - `checkout`: Renders a small badge-like box with a link to the document and the date of the last commit
     - `history`:  Renders a `<h2>` section with the last commit dates, messages and authors
 
@@ -61,7 +65,7 @@ The document-specific shortcode follow a pattern of `[git-<platform>-<action>]`,
 Additionally, there's an enclosing shortcode `[git-add-css]` which adds a `<div id="git-add-css" class="<classes_attribute>"` to wrap its contents. That way you can manipulate the style freely with additional CSS classes. Follow these steps:
 
 1. Add a CSS file to your theme's root folder, which contains some classes, e.g. `class1`, `class2`, `class3`
-2. Enqueue the CSS file by adding `wp_enqueue_style ('git-markdown-style', get_template_directory_uri().'/my-style.css');` to the theme's `functions.php`
+2. Enqueue the CSS file by adding `wp_enqueue_style('my-style', get_template_directory_uri().'/my-style.css');` to the theme's `functions.php`
 3. Add the enclosing `git-add-css` shortcode to your post with the custom CSS classes in the `classes` attribute, e.g.:
 
 ```
@@ -81,12 +85,20 @@ Each shortcode takes a few attributes, indicating if it's required for public or
 | `url`       | all except `git-add-css` | :ballot_box_with_check:       | :ballot_box_with_check:       | string  | The browser URL of the document, e.g. https://github.com/gis-ops/wordpress-markdown-git/blob/master/README.md |
 | `user`      | all except `git-add-css` | :negative_squared_cross_mark: | :ballot_box_with_check:       | string  | The **user name** (not email) of an authorized user                                                           |
 | `token`     | all except `git-add-css` | :negative_squared_cross_mark: | :ballot_box_with_check:       | string  | The access token/app password for the authorized user                                                         |
-| `limit`     | `history`                | :negative_squared_cross_mark: | :negative_squared_cross_mark: | integer | Limits the history of commits to this number                                                                  |
+| `limit`     | `history`                | :negative_squared_cross_mark: | :negative_squared_cross_mark: | integer | Limits the history of commits to this number. Default 5.                                                                |
 | `classes`   | `git-add-css`            | :ballot_box_with_check:       | :ballot_box_with_check:       | string  | The additional CSS classes to render the content with                                                         |
+
+#### Global attributes
+
+Since most attributes will be the same across the entire system, this plugin offers the possibility to set all attributes globally except for `url`:
+
+In the menu *Plugins* ► *Plugin Editor*, choose "Documents from Git" and enter your preferences in the `includes/config.json`.
+
+**Note**, setting the attributes manually in the shortcode has always precedence over any settings in `includes/config.json`.
 
 #### `Token` authorization
 
-You **need to** authorize via `user` and `token` if you intend to publish from a private repository.
+You **need to** authorize via `user` and `token` if you intend to publish from a private repository. You **don't need to** authorize if the repository is open.
 
 However, keep in mind that some platforms have stricter API limits for anonymous requests which are greatly extended if you provide your credentials. So even for public repos it could make sense.
 
@@ -104,15 +116,23 @@ We publish our own tutorials with this plugin: https://gis-ops.com/tutorials/.
 
 #### Publish Markdown from Github
 
-`[git-github-markdown user=nilsnolde token=hxsCL7LpnEp55FH9qK url="https://github.com/gis-ops/tutorials/blob/master/qgis/QGIS_SimplePlugin.md"]`
+`[git-github-markdown url="https://github.com/gis-ops/tutorials/blob/master/qgis/QGIS_SimplePlugin.md"]`
+
+#### Publish Jupyter notebook from Github
+
+`[git-github-jupyter url="https://github.com/GIScience/openrouteservice-examples/blob/master/python/ortools_pubcrawl.ipynb"]`
+
+#### Publish from a private repository
+
+`[git-bitbucket-jupyter user=nilsnolde token=3292_2p3a_84-2af url="https://bitbucket.org/nilsnolde/test-wp-plugin/src/master/README.md"]`
 
 #### Display last commit and document URL from Bitbucket
 
-`[git-bitbucket-checkout user=nilsnolde token=hxsCL7LpnEp55FH9qK url="https://bitbucket.org/nilsnolde/test-wp-plugin/src/master/README.md"]`
+`[git-bitbucket-checkout url="https://bitbucket.org/nilsnolde/test-wp-plugin/src/master/README.md"]`
 
 #### Display commit history from Gitlab
 
-`git-gitlab-history limit=5 user=nilsnolde token=hxsCL7LpnEp55FH9qK url="https://gitlab.com/nilsnolde/esy-osm-pbf/-/blob/master/README.md"]`
+`git-gitlab-history limit=5 url="https://gitlab.com/nilsnolde/esy-osm-pbf/-/blob/master/README.md"]`
 
 #### Use additional CSS classes to style
 
@@ -150,10 +170,6 @@ div.md_dashedbox div.markdown-github {
     font-family: "Helvetica Neue",Helvetica,Arial,sans-serif;
 }
 ```
-
-## Support
-
-Add issues at <https://github.com/gis-ops/wordpress-markdown-git/issues>.
 
 == Installation ==
 1. Install WP Pusher (https://wppusher.com) via ZIP and activate
