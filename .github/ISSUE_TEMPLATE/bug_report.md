@@ -14,8 +14,8 @@ Documents for Git:
 **Describe the bug**
 <!-- A clear and concise description of what the bug is. -->
 
-**Paste the shortcode and the contents of config.json**
-<!-- Go to *Plugins* ► *Plugin Editor*, choose "Documents from Git" and copy the contents of `includes/config.json`. -->
+**Paste the shortcode and the censored contents of config.json**
+<!-- Go to *Plugins* ► *Plugin Editor*, choose "Documents from Git", copy the contents of `includes/config.json` and censor sensitive information. -->
 `shortcode`
 
 ```
