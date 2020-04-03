@@ -166,6 +166,7 @@ The newest version, which might not have made it into the plugin store yet, can 
     - This plugin maintains a copy of the CSS file
 - [`nbconvert`](https://github.com/ghandic/nbconvert): Wordpress plugin to convert Jupyter notebooks into blog posts, License MIT
     - The idea for this plugin was mainly inspired by `nbconvert` and borrows some of the HTML and the CSS for Jupyter notebooks
+- [Jason Long](https://twitter.com/jasonlong): Git logos under [Creative Commons Attribution 3.0 Unported License](https://creativecommons.org/licenses/by/3.0/)
 
 ## Sponsors
 
