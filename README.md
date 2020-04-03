@@ -154,7 +154,7 @@ div.md_dashedbox div.markdown-github {
 
 ### WordPress.org
 
-The newest release of the plugin can be installed via WordPress plugin store.
+The newest release of the plugin can be installed via WordPress plugin store under the name [Documents from Git](https://wordpress.org/plugins/documents-from-git/).
 
 ### Newest `master`
 
