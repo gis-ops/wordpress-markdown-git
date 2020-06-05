@@ -75,6 +75,9 @@ abstract class BaseLoader {
      */
     public function doJupyter($sc_attrs)
     {
+        $input_url = $this->extract_attributes($sc_attrs);
+        $this->set_repo_details($input_url);
+
         $get_url = $this->get_nbviewer_url();
 
         $wp_remote = wp_remote_get($get_url);
