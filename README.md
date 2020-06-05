@@ -21,6 +21,11 @@ The following platforms are currently supported:
 
 ## Usage
 
+**Note**, this plugin uses Github's wonderful [`/markdown` API](https://developer.github.com/v3/markdown/) to render to HTML. This comes with 2 caveats:
+
+1. Unless authenticated, the rate limit is set at 60 requests per minute. It's **strongly recommended** to create a Github access token and register it with the plugin. See [Global attributes section](#global-attributes) for details.
+2. The Markdown content cannot exceed 400 KB, so roughly 400 000 characters incl whitespace. If not a monographic dissertation, this should not be an applicable limit though.
+
 ### Shortcodes
 
 The plugin features a variety of shortcodes. 
@@ -79,7 +84,7 @@ In the menu *Plugins* ► *Plugin Editor*, choose "Documents from Git" and enter
 
 You **need to** authorize via `user` and `token` if you intend to publish from a private repository. You **don't need to** authorize if the repository is open.
  
-However, keep in mind that some platforms have stricter API limits for anonymous requests which are greatly extended if you provide your credentials. So even for public repos it could make sense.
+However, keep in mind that some platforms have stricter API limits for anonymous requests which are greatly extended if you provide your credentials. So even for public repos it could make sense. And it's strongly recommended to register a Github access token regardless of the VCS hosting platform, see the [beginning of the chapter](#usage).
 
 How to generate the `token` depends on your platform:
 

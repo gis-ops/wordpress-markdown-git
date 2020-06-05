@@ -145,6 +145,13 @@ abstract class BaseLoader {
             )
         );
 
+        // Add the Github credentials to have high /markdown rate limits
+        $GITHUB_USER = MARKDOWNGIT_CONFIG['Github']['user'];
+        $GITHUB_TOKEN = MARKDOWNGIT_CONFIG['Github']['token'];
+        if (!empty($GITHUB_USER) or !empty($GITHUB_TOKEN)) {
+            $args['headers']['Authorization'] = 'Basic ' . base64_encode($GITHUB_USER . ':' . $GITHUB_TOKEN);
+        }
+
         $response = wp_remote_post(self::$GITHUB_MARKDOWN_API, $args);
         $html_body = wp_remote_retrieve_body($response);
 
