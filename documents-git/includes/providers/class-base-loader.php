@@ -1,7 +1,5 @@
 <?php
 
-include_once('../../documents-git.php');
-
 abstract class BaseLoader {
     protected static $GITHUB_MARKDOWN_API = 'https://api.github.com/markdown';
     protected static $PROVIDER;  # Needs to be set for every subclass
