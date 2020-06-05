@@ -1,5 +1,8 @@
+wordpress/
 .idea/
 dist/
+tests/docker/
+tests/git_repos
 
 # ignore everything in the root except the "wp-content" directory.
 !wp-content/

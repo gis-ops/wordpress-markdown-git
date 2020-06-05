@@ -131,6 +131,9 @@ abstract class BaseLoader {
             case 401:
                 $raw_markdown = "# 401 - Bad credentials.\nPlease review access token for user " . $this->user;
                 break;
+            case 403:
+                $raw_markdown = "# 403 - Bad credentials.\nPlease review access token for user " . $this->user;
+                break;
             default:
                 $raw_markdown = "# 500 - Server Error.\n$raw_markdown";
         }
@@ -143,6 +146,7 @@ abstract class BaseLoader {
                 'Content-Type' => 'application/json'
             )
         );
+
         $response = wp_remote_post(self::$GITHUB_MARKDOWN_API, $args);
         $html_body = wp_remote_retrieve_body($response);
 

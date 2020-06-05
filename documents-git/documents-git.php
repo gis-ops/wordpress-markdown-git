@@ -3,7 +3,7 @@
  * Plugin Name: Documents from Git
  * Plugin URI: https://github.com/gis-ops/wordpress-markdown-git
  * Description: Render various document formats in any post/page directly from a remote Git repository of your favorite platform via shortcodes. Currently supported: Markdown, Jupyter Notebooks.
- * Version:     1.0.1
+ * Version:     1.0.2
  * Author:      GIS-OPS UG
  * Author URI:  https://gis-ops.com
  * Text Domain: documents-git

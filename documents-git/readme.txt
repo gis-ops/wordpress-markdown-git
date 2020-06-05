@@ -8,8 +8,8 @@ Author: GIS-OPS UG
 Requires at least: 5.0.0
 Tested up to: 5.3.2
 Requires PHP: 7.0
-Stable tag: 1.0.1
-Version: 1.0.1
+Stable tag: 1.0.2
+Version: 1.0.2
 License: GPLv3
 License URI: https://github.com/gis-ops/wordpress-markdown-git/blob/master/LICENSE
 
