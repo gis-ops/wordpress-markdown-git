@@ -6,20 +6,22 @@ Tags: markdown,jupyter,notebook,github,bitbucket,gitlab,vcs
 Author URI: https://gis-ops.com
 Author: GIS-OPS UG
 Requires at least: 5.0.0
-Tested up to: 5.3.2
+Tested up to: 5.4.1
 Requires PHP: 7.0
 Stable tag: 1.0.2
 Version: 1.0.2
 License: GPLv3
 License URI: https://github.com/gis-ops/wordpress-markdown-git/blob/master/LICENSE
 
-A plugin to inject files directly into a post from popular Git platforms.
+A plugin to inject and render files in a WordPress post or page directly from most popular Git platforms.
 
-Currently supported file types: Markdown.
+Currently supported file types: Markdown, Jupyter notebook.
 
-Currently supported platforms: Github, Bitbucket.
+Currently supported platforms: Github, Bitbucket, Gitlab.
 
 == Description ==
+
+Official documentation: https://github.com/gis-ops/wordpress-markdown-git
 
 This WordPress Plugin lets you easily publish, collaborate on and version control your \[**Markdown, Jupyter notebook**\] documents directly from your favorite remote Git platform, **even if it's self-hosted**.
 
@@ -27,7 +29,7 @@ The advantages are:
 
 - Write documents in your favorite editor and just push to your remote repository to update your blog instantly
 - Use the power of version control: publish different versions of the document in different posts, i.e. from another branch or commit than latest `master`
-- Easy to update by external users via pull requests, minimizes the chance of stale tutorials
+- Easy to update by your readers via pull requests, minimizing the chance of stale tutorials
 
 The following document types are currently supported:
 
@@ -41,6 +43,11 @@ The following platforms are currently supported:
 - Gitlab
 
 ## Usage
+
+**Note**, this plugin uses Github's wonderful [`/markdown` API](https://developer.github.com/v3/markdown/) to render to HTML. This comes with 2 caveats:
+
+1. Unless authenticated, the rate limit is set at 60 requests per minute. It's **strongly recommended** to create a Github access token and register it with the plugin. Then the rate limit will be set to 5000 requests per hour. See [Global attributes section](#global-attributes) for details on how to do that.
+2. The Markdown content cannot exceed 400 KB, so roughly 400 000 characters incl whitespace. If not a monographic dissertation, this should not be an applicable limit though.
 
 ### Shortcodes
 
@@ -100,7 +107,7 @@ In the menu *Plugins* ► *Plugin Editor*, choose "Documents from Git" and enter
 
 You **need to** authorize via `user` and `token` if you intend to publish from a private repository. You **don't need to** authorize if the repository is open.
 
-However, keep in mind that some platforms have stricter API limits for anonymous requests which are greatly extended if you provide your credentials. So even for public repos it could make sense.
+However, keep in mind that some platforms have stricter API limits for anonymous requests which are greatly extended if you provide your credentials. So even for public repos it could make sense. And it's strongly recommended to register a Github access token regardless of the VCS hosting platform, see the [beginning of the chapter](#usage).
 
 How to generate the `token` depends on your platform:
 
@@ -171,6 +178,16 @@ div.md_dashedbox div.markdown-github {
 }
 ```
 
+== Frequently Asked Questions ==
+
+= Are relative links supported? =
+
+No, relative image links (e.g. `![img](./img.png)`) cannot be processed by this plugin. Please see the notes in the [documentation](https://github.com/gis-ops/wordpress-markdown-git#images) for ways to work around this limitation.
+
+= Can I host the source file in a private repository? =
+
+Yes, you can, if you provide the plugin's `config.json` with the necessary credentials for your platform (see [documentation](https://github.com/gis-ops/wordpress-markdown-git#global-attributes) for details). However, be aware that all image URLs you are referencing are openly accessible or provide the necessary authentication means. Also see [#13](https://github.com/gis-ops/wordpress-markdown-git/issues/13#issuecomment-638965192) and the [documentation](https://github.com/gis-ops/wordpress-markdown-git#images) for further details.
+
 == Installation ==
 1. Install WP Pusher (https://wppusher.com) via ZIP and activate
 2. Install from Github via WP Pusher from gis-ops/wordpress-markdown-git
@@ -178,8 +195,13 @@ div.md_dashedbox div.markdown-github {
 
 Or directly from WordPress plugin repository.
 
-Or install as ZIP from https://github.com/gis-ops/wordpress-markdown-git/archive/master.zip
+Or install the latest code as ZIP from https://github.com/gis-ops/wordpress-markdown-git/archive/master.zip
 
 == Changelog ==
+
+= v1.0.2 =
+* Fixed rate limiting for unauthenticated `/markdown` requests
+* Fixed Jupyter implementation
+
 = v1.0.0 =
 * First version
