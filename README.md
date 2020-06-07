@@ -6,7 +6,7 @@ The advantages are:
 
 - Write documents in your favorite editor and just push to your remote repository to update your blog instantly
 - Use the power of version control: publish different versions of the document in different posts, i.e. from another branch or commit than latest `master`
-- Easy to update by external users via pull requests, minimizes the chance of stale tutorials 
+- Easy to update by your readers via pull requests, minimizing the chance of stale tutorials
 
 The following document types are currently supported:
 
@@ -23,15 +23,15 @@ The following platforms are currently supported:
 
 **Note**, this plugin uses Github's wonderful [`/markdown` API](https://developer.github.com/v3/markdown/) to render to HTML. This comes with 2 caveats:
 
-1. Unless authenticated, the rate limit is set at 60 requests per minute. It's **strongly recommended** to create a Github access token and register it with the plugin. See [Global attributes section](#global-attributes) for details.
+1. Unless authenticated, the rate limit is set at 60 requests per minute. It's **strongly recommended** to create a Github access token and register it with the plugin. Then the rate limit will be set to 5000 requests per hour. See [Global attributes section](#global-attributes) for details on how to do that.
 2. The Markdown content cannot exceed 400 KB, so roughly 400 000 characters incl whitespace. If not a monographic dissertation, this should not be an applicable limit though.
 
 ### Shortcodes
 
-The plugin features a variety of shortcodes. 
+The plugin features a variety of shortcodes.
 
 #### Publish documents
- 
+
 The document-specific shortcodes follow a pattern of `[git-<platform>-<action>]`, where
 
 - `<platform>` can be one of
@@ -59,7 +59,7 @@ Additionally, there's an enclosing shortcode `[git-add-css]` which adds a `<div 
     [git-gitlab-history url=...]
 [/git-add-css]
 ```
-    
+
 ### Attributes
 
 Each shortcode takes a few attributes, indicating if it's required for public or private repositories:
@@ -83,7 +83,7 @@ In the menu *Plugins* ► *Plugin Editor*, choose "Documents from Git" and enter
 #### `Token` authorization
 
 You **need to** authorize via `user` and `token` if you intend to publish from a private repository. You **don't need to** authorize if the repository is open.
- 
+
 However, keep in mind that some platforms have stricter API limits for anonymous requests which are greatly extended if you provide your credentials. So even for public repos it could make sense. And it's strongly recommended to register a Github access token regardless of the VCS hosting platform, see the [beginning of the chapter](#usage).
 
 How to generate the `token` depends on your platform:
@@ -172,6 +172,25 @@ The newest version, which might not have made it into the plugin store yet, can 
 - [`nbconvert`](https://github.com/ghandic/nbconvert): Wordpress plugin to convert Jupyter notebooks into blog posts, License MIT
     - The idea for this plugin was mainly inspired by `nbconvert` and borrows some of the HTML and the CSS for Jupyter notebooks
 - [Jason Long](https://twitter.com/jasonlong): Git logos under [Creative Commons Attribution 3.0 Unported License](https://creativecommons.org/licenses/by/3.0/)
+
+## Troubleshooting
+
+### Images
+
+Images cannot (yet) be referenced with a relative link, i.e. `[some_image](./some_image.jpg)` won't work, as WordPress will try to access the image relative to your WordPress installation, e.g. `https://myblog.com/some_image.jpg`. See [#15](https://github.com/gis-ops/wordpress-markdown-git/issues/15) for a discussion on the topic.
+
+The solution is to either
+1. upload the image to WordPress and use the provided link
+2. push the Markdown file to the cloud, view the file in the browser and copy the provider-generated image address
+3. put the images in a repository folder and reference absolute links to your repository's raw files
+
+**Note**, the last two options might be more involved when the image (alongside the Markdown file) is hosted in a private repository. Either the provider provides a token-authenticated URL for hosted images which you can use (see. e.g. [#13](https://github.com/gis-ops/wordpress-markdown-git/issues/13#issuecomment-638965192) for Bitbucket). Or publish the image(s) in a separate **public** repository. Or use option 1.
+
+It's generally recommended to publish (and version) images alongside their Markdown document in Git.
+
+### `API rate limit exceeded`
+
+If you encounter this message instead of seeing your rendered Markdown file, you most likely have forgotten to provide your Github username and access token in the `config.json`. See [Global attributes](#global-attributes) for a How-To and [Usage](#usage) for more information why this is necessary.
 
 ## Sponsors
 
