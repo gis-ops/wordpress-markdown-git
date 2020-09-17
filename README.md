@@ -69,7 +69,7 @@ Each shortcode takes a few attributes, indicating if it's required for public or
 | `url`       | all except `git-add-css` | :ballot_box_with_check:       | :ballot_box_with_check:       | string  | The browser URL of the document, e.g. https://github.com/gis-ops/wordpress-markdown-git/blob/master/README.md |
 | `user`      | all except `git-add-css` | :negative_squared_cross_mark: | :ballot_box_with_check:       | string  | The **user name** (not email) of an authorized user                                                           |
 | `token`     | all except `git-add-css` | :negative_squared_cross_mark: | :ballot_box_with_check:       | string  | The access token/app password for the authorized user                                                         |
-| `cache_ttl` | all except `git-add-css` | :ballot_box_with_check:       | :ballot_box_with_check:       | integer | The time in seconds that the plugin will cache the content (works only if cache is enabled)                   |
+| `cache_ttl` | all except `git-add-css` | :negative_squared_cross_mark:       | :negative_squared_cross_mark:       | integer | The time in seconds that the plugin will cache the content (works only if cache is enabled)                   |
 | `limit`     | `history`                | :negative_squared_cross_mark: | :negative_squared_cross_mark: | integer | Limits the history of commits to this number. Default 5.                                                      |
 | `classes`   | `git-add-css`            | :ballot_box_with_check:       | :ballot_box_with_check:       | string  | The additional CSS classes to render the content with                                                         |
 
