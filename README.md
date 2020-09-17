@@ -69,7 +69,8 @@ Each shortcode takes a few attributes, indicating if it's required for public or
 | `url`       | all except `git-add-css` | :ballot_box_with_check:       | :ballot_box_with_check:       | string  | The browser URL of the document, e.g. https://github.com/gis-ops/wordpress-markdown-git/blob/master/README.md |
 | `user`      | all except `git-add-css` | :negative_squared_cross_mark: | :ballot_box_with_check:       | string  | The **user name** (not email) of an authorized user                                                           |
 | `token`     | all except `git-add-css` | :negative_squared_cross_mark: | :ballot_box_with_check:       | string  | The access token/app password for the authorized user                                                         |
-| `limit`     | `history`                | :negative_squared_cross_mark: | :negative_squared_cross_mark: | integer | Limits the history of commits to this number. Default 5.                                                                |
+| `cache_ttl` | all except `git-add-css` | :ballot_box_with_check:       | :ballot_box_with_check:       | integer | The time in seconds that the plugin will cache the content (works only if cache is enabled)                   |
+| `limit`     | `history`                | :negative_squared_cross_mark: | :negative_squared_cross_mark: | integer | Limits the history of commits to this number. Default 5.                                                      |
 | `classes`   | `git-add-css`            | :ballot_box_with_check:       | :ballot_box_with_check:       | string  | The additional CSS classes to render the content with                                                         |
 
 #### Global attributes
@@ -79,6 +80,18 @@ Since most attributes will be the same across the entire system, this plugin off
 In the menu *Plugins* ► *Plugin Editor*, choose "Documents from Git" and enter your preferences in the `includes/config.json`.
 
 **Note**, setting the attributes manually in the shortcode has always precedence over any settings in `includes/config.json`.
+
+#### Caching
+
+Often we need to prioritize speed when loading content and, in addition, it is very costly to fetch, load and format the content every time we need to read the content of the post.
+
+To solve this problem, it is possible to enable content caching:
+
+In the menu * Plugins * ► * Plugin Editor *, choose "Documents from Git" > `includes / config.json` and set as `true` the `enable_cache` option.
+
+The preference `cache_ttl` sets how many **seconds** the content cache will keep alive.
+
+Attention! The cache only will persists in server if your application has a [persistent cache plugin](https://codex.wordpress.org/Class_Reference/WP_Object_Cache#Persistent_Caching) enabled.
 
 #### `Token` authorization
 
@@ -101,6 +114,10 @@ We publish our own tutorials with this plugin: https://gis-ops.com/tutorials/.
 #### Publish Markdown from Github
 
 `[git-github-markdown url="https://github.com/gis-ops/tutorials/blob/master/qgis/QGIS_SimplePlugin.md"]`
+
+#### Publish Markdown from Github with 1 hour cache
+
+`[git-github-markdown url="https://github.com/gis-ops/tutorials/blob/master/qgis/QGIS_SimplePlugin.md" cache_ttl="3600"]`
 
 #### Publish Jupyter notebook from Github
 
