@@ -121,6 +121,10 @@ abstract class BaseLoader {
      */
     public function doMarkdown($sc_attrs)
     {
+        if ($cached_response = $this->get_cached_content(md5($sc_attrs), 'markdown')) {
+            return $cached_response;
+        }
+
         list($raw_markdown, $response_code) = $this->get_raw_document($sc_attrs);
 
         switch ($response_code) {
@@ -158,7 +162,13 @@ abstract class BaseLoader {
         $response = wp_remote_post(self::$GITHUB_MARKDOWN_API, $args);
         $html_body = wp_remote_retrieve_body($response);
 
-        return '<div class="markdown-body">' . $html_body . '</div>';
+        $html_string = '<div class="markdown-body">' . $html_body . '</div>';
+
+        if ($response_code == 200) {
+            $this->set_content_cache(md5($sc_attrs), 'markdown', $html_string);
+        }
+
+        return $html_string;
     }
 
     /**
@@ -171,6 +181,10 @@ abstract class BaseLoader {
      */
     public function doCheckout($sc_attrs)
     {
+        if ($cached_response = $this->get_cached_content(md5($sc_attrs), 'checkout')) {
+            return $cached_response;
+        }
+
         $url = $this->extract_attributes($sc_attrs);
         $this->set_repo_details($url);
 
@@ -188,7 +202,7 @@ abstract class BaseLoader {
                 $html_body = "404 - Post not found on $url";
         }
 
-        return '
+        $html_string = '
         <div class="markdown-github">
           <div class="markdown-github-labels">
             <label class="github-link">
@@ -197,6 +211,12 @@ abstract class BaseLoader {
             </label>
           </div>
         </div>';
+
+        if ($response_code == 200) {
+            $this->set_content_cache(md5($sc_attrs), 'checkout', $html_string);
+        }
+
+        return $html_string;
     }
 
     /**
@@ -207,6 +227,10 @@ abstract class BaseLoader {
      */
     public function doHistory($sc_attrs)
     {
+        if ($cached_response = $this->get_cached_content(md5($sc_attrs), 'history')) {
+            return $cached_response;
+        }
+
         $url = $this->extract_attributes($sc_attrs);
         if (empty($this->limit)) {
             $this->limit = 5;
@@ -229,6 +253,7 @@ abstract class BaseLoader {
         }
         $html_string .= '</article>';
 
+        $this->set_content_cache(md5($sc_attrs), 'history', $html_string);
         return $html_string;
     }
 
@@ -280,7 +305,7 @@ abstract class BaseLoader {
      * Extracts the attributes from a shortcode. All attributes of all shortcodes are extracted,
      * but not necessarily passed, so they default to an empty string.
      *
-     * It also sets the class attributes "user", "token" and "limit" from config.json or shortcode attribute.
+     * It also sets the class attributes "user", "token", "cache_ttl" and "limit" from config.json or shortcode attribute.
      *
      * @param $attrs array Attributes of the shortcode
      * @return string parsed url
@@ -292,7 +317,8 @@ abstract class BaseLoader {
                 'url' => "",
                 'user' => "",
                 'token' => "",
-                'limit' => ""
+                'limit' => "",
+                'cache_ttl' => ""
             ), $attrs
             )
         );
@@ -300,7 +326,49 @@ abstract class BaseLoader {
         $this->user = ($user === '') ? (MARKDOWNGIT_CONFIG[static::$PROVIDER]["user"]) : ($user);
         $this->token = ($token === '') ? (MARKDOWNGIT_CONFIG[static::$PROVIDER]["token"]) : ($token);
         $this->limit = ($limit === '') ? (MARKDOWNGIT_CONFIG["limit"]) : ($limit);
-
+        $this->cache_ttl = ($cache_ttl === '') ? (MARKDOWNGIT_CONFIG["cache_ttl"]) : ($cache_ttl);
         return $url;
+    }
+
+    /**
+     * Get cached content when cache is enabled.
+     *
+     * @param string $cache_key cache key.
+     * @param string $group group where content was stored.
+     * @return mixed
+     */
+    private function get_cached_content($cache_key, $group)
+    {
+        if (!$this->is_enabled_cache()) {
+            return false;
+        }
+
+        return wp_cache_get($cache_key, $group);
+    }
+
+    /**
+     * Caches content using a cache key
+     *
+     * @param string $cache_key cache key.
+     * @param string $group group where content was stored.
+     * @param mixed $content content to cache.
+     */
+    private function set_content_cache($cache_key, $group, $content)
+    {
+        if (!$this->is_enabled_cache()) {
+            return;
+        }
+
+        wp_cache_set( $cache_key, $content, $group, (int) $this->cache_ttl);
+    }
+
+    /**
+     * Return if cache is enabled.
+     *
+     * @return boolean
+     */
+    private function is_enabled_cache()
+    {
+        return (bool) MARKDOWNGIT_CONFIG['enable_cache'];
     }
 }

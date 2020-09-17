@@ -1,5 +1,7 @@
 {
   "limit": 5,
+  "enable_cache": true,
+  "cache_ttl": 3600,
   "classes": "",
   "Github": {
     "user": "",
