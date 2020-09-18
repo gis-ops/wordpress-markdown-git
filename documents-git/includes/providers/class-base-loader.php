@@ -343,7 +343,7 @@ abstract class BaseLoader {
             return false;
         }
 
-        return wp_cache_get($cache_key, $group);
+        return wp_cache_get($cache_key, "markdown_git:$group");
     }
 
     /**
@@ -359,7 +359,7 @@ abstract class BaseLoader {
             return;
         }
 
-        wp_cache_set( $cache_key, $content, $group, (int) $this->cache_ttl);
+        wp_cache_set( $cache_key, $content, "markdown_git:$group", (int) $this->cache_ttl);
     }
 
     /**
