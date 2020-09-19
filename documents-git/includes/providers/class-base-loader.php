@@ -14,6 +14,7 @@ abstract class BaseLoader {
     protected $file_path;
     protected $user;
     protected $token;
+    protected $cache_ttl;
 
     public function __construct() {
         if (!isset(static::$PROVIDER)) {
@@ -76,6 +77,12 @@ abstract class BaseLoader {
     public function doJupyter($sc_attrs)
     {
         $input_url = $this->extract_attributes($sc_attrs);
+
+        $cached_response = $this->get_cached_content($input_url, 'jupyter');
+        if ($cached_response) {
+            return $cached_response;
+        }
+
         $this->set_repo_details($input_url);
 
         $get_url = $this->get_nbviewer_url();
@@ -109,7 +116,13 @@ abstract class BaseLoader {
                 $inner_html = "<h1>500 - Server Error</h1>";
         }
 
-        return '<div class="nbconvert">' . $inner_html . '</div>';
+        $output = '<div class="nbconvert">' . $inner_html . '</div>';
+
+        if ($response_code == 200) {
+            $this->set_content_cache($input_url,'jupyter', $output);
+        }
+
+        return $output;
     }
 
     /**
@@ -121,7 +134,8 @@ abstract class BaseLoader {
      */
     public function doMarkdown($sc_attrs)
     {
-        if ($cached_response = $this->get_cached_content(md5($sc_attrs), 'markdown')) {
+        $cached_response = $this->get_cached_content($sc_attrs['url'], 'markdown');
+        if ($cached_response) {
             return $cached_response;
         }
 
@@ -165,7 +179,7 @@ abstract class BaseLoader {
         $html_string = '<div class="markdown-body">' . $html_body . '</div>';
 
         if ($response_code == 200) {
-            $this->set_content_cache(md5($sc_attrs), 'markdown', $html_string);
+            $this->set_content_cache($sc_attrs['url'],'markdown', $html_string);
         }
 
         return $html_string;
@@ -181,11 +195,12 @@ abstract class BaseLoader {
      */
     public function doCheckout($sc_attrs)
     {
-        if ($cached_response = $this->get_cached_content(md5($sc_attrs), 'checkout')) {
+        $url = $this->extract_attributes($sc_attrs);
+
+        if ($cached_response = $this->get_cached_content($url, 'checkout')) {
             return $cached_response;
         }
 
-        $url = $this->extract_attributes($sc_attrs);
         $this->set_repo_details($url);
 
         list($datetime_str, $response_code) = $this->get_checkout_datetime();
@@ -213,7 +228,7 @@ abstract class BaseLoader {
         </div>';
 
         if ($response_code == 200) {
-            $this->set_content_cache(md5($sc_attrs), 'checkout', $html_string);
+            $this->set_content_cache($url, 'checkout', $html_string);
         }
 
         return $html_string;
@@ -227,14 +242,16 @@ abstract class BaseLoader {
      */
     public function doHistory($sc_attrs)
     {
-        if ($cached_response = $this->get_cached_content(md5($sc_attrs), 'history')) {
-            return $cached_response;
-        }
 
         $url = $this->extract_attributes($sc_attrs);
         if (empty($this->limit)) {
             $this->limit = 5;
         }
+
+        if ($cached_response = $this->get_cached_content($url, 'history')) {
+            return $cached_response;
+        }
+
         $this->set_repo_details($url);
 
         $html_string = '<hr style="margin: 20px 0; width: 70%; border-top: 1.5px solid #aaaaaa;" /><article class="markdown-body"><h2><strong><a target="_blank" href="' . $url . '">Post history - Last 5 commits</a></strong></h2>';
@@ -253,7 +270,7 @@ abstract class BaseLoader {
         }
         $html_string .= '</article>';
 
-        $this->set_content_cache(md5($sc_attrs), 'history', $html_string);
+        $this->set_content_cache($url, 'history', $html_string);
         return $html_string;
     }
 
@@ -327,6 +344,7 @@ abstract class BaseLoader {
         $this->token = ($token === '') ? (MARKDOWNGIT_CONFIG[static::$PROVIDER]["token"]) : ($token);
         $this->limit = ($limit === '') ? (MARKDOWNGIT_CONFIG["limit"]) : ($limit);
         $this->cache_ttl = ($cache_ttl === '') ? (MARKDOWNGIT_CONFIG["cache_ttl"]) : ($cache_ttl);
+
         return $url;
     }
 
@@ -343,7 +361,8 @@ abstract class BaseLoader {
             return false;
         }
 
-        return wp_cache_get($cache_key, "markdown_git:$group");
+        $cache = get_transient(md5($cache_key . $group));
+        return $cache;
     }
 
     /**
@@ -353,13 +372,13 @@ abstract class BaseLoader {
      * @param string $group group where content was stored.
      * @param mixed $content content to cache.
      */
-    private function set_content_cache($cache_key, $group, $content)
+    private function set_content_cache(string $cache_key, string $group, $content)
     {
         if (!$this->is_enabled_cache()) {
             return;
         }
 
-        wp_cache_set( $cache_key, $content, "markdown_git:$group", (int) $this->cache_ttl);
+        set_transient( md5($cache_key . $group), $content, (int) $this->cache_ttl);
     }
 
     /**
