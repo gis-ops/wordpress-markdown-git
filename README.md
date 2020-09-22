@@ -23,7 +23,7 @@ The following platforms are currently supported:
 
 **Note**, this plugin uses Github's wonderful [`/markdown` API](https://developer.github.com/v3/markdown/) to render to HTML. This comes with 2 caveats:
 
-1. Unless authenticated, the rate limit is set at 60 requests per minute. It's **strongly recommended** to create a Github access token and register it with the plugin. Then the rate limit will be set to 5000 requests per hour. See [Global attributes section](#global-attributes) for details on how to do that.
+1. Unless authenticated, the rate limit is set at 60 requests per minute. Since v1.1.0 the plugin is capable of statically [caching content](#caching). In case that's not dynamic enough for you, it's **strongly recommended** to create a Github access token and register it with the plugin. Then the rate limit will be set to 5000 requests per hour. See [Global attributes section](#global-attributes) for details on how to do that.
 2. The Markdown content cannot exceed 400 KB, so roughly 400 000 characters incl whitespace. If not a monographic dissertation, this should not be an applicable limit though.
 
 ### Shortcodes
@@ -69,7 +69,8 @@ Each shortcode takes a few attributes, indicating if it's required for public or
 | `url`       | all except `git-add-css` | :ballot_box_with_check:       | :ballot_box_with_check:       | string  | The browser URL of the document, e.g. https://github.com/gis-ops/wordpress-markdown-git/blob/master/README.md |
 | `user`      | all except `git-add-css` | :negative_squared_cross_mark: | :ballot_box_with_check:       | string  | The **user name** (not email) of an authorized user                                                           |
 | `token`     | all except `git-add-css` | :negative_squared_cross_mark: | :ballot_box_with_check:       | string  | The access token/app password for the authorized user                                                         |
-| `cache_ttl` | all except `git-add-css` | :negative_squared_cross_mark:       | :negative_squared_cross_mark:       | integer | The time in seconds that the plugin will cache the content (works only if cache is enabled)                   |
+| `cache_ttl` | all except `git-add-css` | :negative_squared_cross_mark:       | :negative_squared_cross_mark:       | integer | The time in seconds that the plugin will cache, **only for `cache_strategy=static`**.           |
+| `cache_strategy` | all except `git-add-css` | :negative_squared_cross_mark:       | :negative_squared_cross_mark:       | integer | Only `static` caching is implemented so far. `dynamic` caching is on the way!                   |
 | `limit`     | `history`                | :negative_squared_cross_mark: | :negative_squared_cross_mark: | integer | Limits the history of commits to this number. Default 5.                                                      |
 | `classes`   | `git-add-css`            | :ballot_box_with_check:       | :ballot_box_with_check:       | string  | The additional CSS classes to render the content with                                                         |
 
@@ -85,11 +86,19 @@ In the menu *Plugins* ► *Plugin Editor*, choose "Documents from Git" and enter
 
 Often we need to prioritize speed when loading content and, in addition, it is very costly to fetch, load and format the content every time we need to read the content of the post.
 
-To solve this problem, it is possible to enable content caching:
+This plugin soon offers 2 methods for caching, `static` and `dynamic` which can be set via the `cache_strategy` property.
 
-In the menu * Plugins * ► * Plugin Editor *, choose "Documents from Git" > `includes / config.json` and set as `true` the `enable_cache` option.
+##### Static caching (`cache_strategy=static`)
 
-The preference `cache_ttl` sets how many **seconds** the content cache will keep alive.
+This is the default strategy, as it doesn't require any user action.
+
+The property `cache_ttl` sets how many **seconds** the content cache will keep alive.
+
+Currently there's no way to flush the cache manually. However, changing `cache_ttl` or the history `limit` will create a new cache.
+
+##### Dynamic caching (`cache_strategy=dynamic`)
+
+**This is not implemented yet**. See [#4](https://github.com/gis-ops/wordpress-markdown-git/issues/4) for details.
 
 #### `Token` authorization
 

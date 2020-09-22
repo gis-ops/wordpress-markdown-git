@@ -1,6 +1,6 @@
 {
   "limit": 5,
-  "enable_cache": true,
+  "cache_strategy": "static",
   "cache_ttl": 3600,
   "classes": "",
   "Github": {

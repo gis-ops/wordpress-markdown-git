@@ -4,7 +4,7 @@ class BitbucketLoader extends BaseLoader {
 
     protected static $PROVIDER = 'Bitbucket';
 
-    protected function extract_history_from_commit_json(&$commit) {
+    protected function extract_history_from_commit_json(array &$commit) {
         return array(
             $commit['author']['raw'],
             $commit['date'],

@@ -1,7 +1,8 @@
 <?php
 
 abstract class BaseLoader {
-    protected static $GITHUB_MARKDOWN_API = 'https://api.github.com/markdown';
+    private static $NAMESPACE = 'markdown-git';
+    private static $GITHUB_MARKDOWN_API = 'https://api.github.com/markdown';
     protected static $PROVIDER;  # Needs to be set for every subclass
 
     # Can vary for self-hosted versions of the platforms
@@ -14,7 +15,12 @@ abstract class BaseLoader {
     protected $file_path;
     protected $user;
     protected $token;
+    protected $limit;
     protected $cache_ttl;
+    protected $cache_strategy;
+    /**
+     * @var mixed
+     */
 
     public function __construct() {
         if (!isset(static::$PROVIDER)) {
@@ -57,7 +63,7 @@ abstract class BaseLoader {
      * @param $commit array The associative array for a single commit from the JSON response
      * @return mixed array of name, date and message
      */
-    abstract protected function extract_history_from_commit_json(&$commit);
+    abstract protected function extract_history_from_commit_json(array &$commit);
 
     /**
      * The API specific function to retrieve the URL needed to use with https://nbviewer.jupyter.org
@@ -72,16 +78,14 @@ abstract class BaseLoader {
      *
      * @param $sc_attrs array Shortcode attributes
      * @return string HTML of the whole Jupyter notebook processed by nbviewer.jupyter.org
-     *
      */
-    public function doJupyter($sc_attrs)
+    public function doJupyter(array $sc_attrs)
     {
-        $cache_key = $this->build_cache_key($sc_attrs);
-        if ($cached_response = $this->get_cached_content($cache_key, 'jupyter')) {
+        $input_url = $this->extract_attributes($sc_attrs);
+
+        if ($this->is_static_cache() && $cached_response = $this->get_cached_content($input_url, 'jupyter')) {
             return $cached_response;
         }
-
-        $input_url = $this->extract_attributes($sc_attrs);
 
         $this->set_repo_details($input_url);
 
@@ -118,8 +122,8 @@ abstract class BaseLoader {
 
         $output = '<div class="nbconvert">' . $inner_html . '</div>';
 
-        if ($response_code == 200) {
-            $this->set_content_cache($cache_key,'jupyter', $output);
+        if ($this->is_static_cache() && $response_code == 200) {
+            $this->set_content_cache($input_url,'jupyter', $output);
         }
 
         return $output;
@@ -128,18 +132,19 @@ abstract class BaseLoader {
     /**
      * The callback function for the "markdown" shortcode action.
      *
-     * @param $sc_attrs array Shortcode attributes
+     * @param array $sc_attrs Shortcode attributes
      * @return string HTML of the whole Markdown document processed by Github's markdown endpoint
-     *
      */
-    public function doMarkdown($sc_attrs)
+    public function doMarkdown(array $sc_attrs)
     {
-        $cache_key = $this->build_cache_key($sc_attrs);
-        if ($cached_response = $this->get_cached_content($cache_key, 'markdown')) {
+        $url = $this->extract_attributes($sc_attrs);
+
+        if ($this->is_static_cache() && $cached_response = $this->get_cached_content($url, 'markdown')) {
             return $cached_response;
         }
 
-        list($raw_markdown, $response_code) = $this->get_raw_document($sc_attrs);
+        $this->set_repo_details($url);
+        list($raw_markdown, $response_code) = $this->get_document();
 
         switch ($response_code) {
             case 200:
@@ -178,8 +183,8 @@ abstract class BaseLoader {
 
         $html_string = '<div class="markdown-body">' . $html_body . '</div>';
 
-        if ($response_code == 200) {
-            $this->set_content_cache($cache_key,'markdown', $html_string);
+        if ($this->is_static_cache() && $response_code == 200) {
+            $this->set_content_cache($url,'markdown', $html_string);
         }
 
         return $html_string;
@@ -193,14 +198,13 @@ abstract class BaseLoader {
      * @param $sc_attrs array Shortcode attributes
      * @return string HTML for the checkout span
      */
-    public function doCheckout($sc_attrs)
+    public function doCheckout(array $sc_attrs)
     {
-        $cache_key = $this->build_cache_key($sc_attrs);
-        if ($cached_response = $this->get_cached_content($cache_key, 'checkout')) {
+        $url = $this->extract_attributes($sc_attrs);
+
+        if ($this->is_static_cache() && $cached_response = $this->get_cached_content($url, 'checkout')) {
             return $cached_response;
         }
-
-        $url = $this->extract_attributes($sc_attrs);
 
         $this->set_repo_details($url);
 
@@ -228,8 +232,8 @@ abstract class BaseLoader {
           </div>
         </div>';
 
-        if ($response_code == 200) {
-            $this->set_content_cache($cache_key, 'checkout', $html_string);
+        if ($this->is_static_cache() && $response_code == 200) {
+            $this->set_content_cache($url, 'checkout', $html_string);
         }
 
         return $html_string;
@@ -241,18 +245,17 @@ abstract class BaseLoader {
      * @param $sc_attrs array Shortcode attributes
      * @return string HTML for the Last X commits section
      */
-    public function doHistory($sc_attrs)
+    public function doHistory(array $sc_attrs)
     {
-        $cache_key = $this->build_cache_key($sc_attrs);
-        if ($cached_response = $this->get_cached_content($cache_key, 'history')) {
+        $url = $this->extract_attributes($sc_attrs);
+
+        if ($this->is_static_cache() && $cached_response = $this->get_cached_content($url, 'history')) {
             return $cached_response;
         }
 
-        $url = $this->extract_attributes($sc_attrs);
         if (empty($this->limit)) {
             $this->limit = 5;
         }
-
         $this->set_repo_details($url);
 
         $html_string = '<hr style="margin: 20px 0; width: 70%; border-top: 1.5px solid #aaaaaa;" /><article class="markdown-body"><h2><strong><a target="_blank" href="' . $url . '">Post history - Last 5 commits</a></strong></h2>';
@@ -271,7 +274,10 @@ abstract class BaseLoader {
         }
         $html_string .= '</article>';
 
-        $this->set_content_cache($cache_key, 'history', $html_string);
+        if ($this->is_static_cache()) {
+            $this->set_content_cache($url, 'history', $html_string);
+        }
+
         return $html_string;
     }
 
@@ -280,7 +286,8 @@ abstract class BaseLoader {
      *
      * @return string Base64 encoded Basic Authorization header
      */
-    protected function get_auth_header(){
+    protected function get_auth_header()
+    {
         return 'Basic ' . base64_encode($this->user . ':' . $this->token);
     }
 
@@ -290,7 +297,7 @@ abstract class BaseLoader {
      *
      * @param $url string URL of the file to be rendered
      */
-    protected function set_repo_details($url)
+    protected function set_repo_details(string $url)
     {
         $url_parsed = parse_url($url);
         $domain = $url_parsed['host'];
@@ -307,16 +314,6 @@ abstract class BaseLoader {
         $this->repo = $repo;
         $this->branch = $branch;
         $this->file_path = $file_path;
-
-    }
-
-    private function get_raw_document($sc_attrs)
-    {
-        $url = $this->extract_attributes($sc_attrs);
-        $this->set_repo_details($url);
-        list($raw_document, $response_code) = $this->get_document();
-
-        return array($raw_document, $response_code);
     }
 
     /**
@@ -328,15 +325,16 @@ abstract class BaseLoader {
      * @param $attrs array Attributes of the shortcode
      * @return string parsed url
      */
-    private function extract_attributes($attrs) {
-
+    private function extract_attributes(array $attrs)
+    {
         $attrs = array_change_key_case((array)$attrs, CASE_LOWER);
         extract(shortcode_atts(array(
                 'url' => "",
                 'user' => "",
                 'token' => "",
                 'limit' => "",
-                'cache_ttl' => ""
+                'cache_ttl' => "",
+                'cache_strategy' => "",
             ), $attrs
             )
         );
@@ -345,6 +343,7 @@ abstract class BaseLoader {
         $this->token = ($token === '') ? (MARKDOWNGIT_CONFIG[static::$PROVIDER]["token"]) : ($token);
         $this->limit = ($limit === '') ? (MARKDOWNGIT_CONFIG["limit"]) : ($limit);
         $this->cache_ttl = ($cache_ttl === '') ? (MARKDOWNGIT_CONFIG["cache_ttl"]) : ($cache_ttl);
+        $this->cache_strategy = ($cache_strategy === '') ? (MARKDOWNGIT_CONFIG["cache_strategy"]) : ($cache_strategy);
 
         return $url;
     }
@@ -352,53 +351,53 @@ abstract class BaseLoader {
     /**
      * Get cached content when cache is enabled.
      *
-     * @param string $cache_key cache key.
+     * @param string $url cache key to be serialized.
      * @param string $group group where content was stored.
      * @return mixed
+     *
+     * @since 1.1.0
      */
-    private function get_cached_content(string $cache_key, string $group)
+    private function get_cached_content(string $url, string $group)
     {
-        if (!$this->is_enabled_cache()) {
-            return false;
-        }
-
-        return get_transient("markdown_git:$group:$cache_key");
+        return get_transient($this->get_cache_key($url, $group));
     }
 
     /**
      * Caches content using a cache key
      *
-     * @param string $cache_key cache key.
+     * @param string $url cache key.
      * @param string $group group where content was stored.
      * @param mixed $content content to cache.
-     */
-    private function set_content_cache(string $cache_key, string $group, $content)
-    {
-        if (!$this->is_enabled_cache()) {
-            return;
-        }
-
-        set_transient("markdown_git:$group:$cache_key", $content, (int) $this->cache_ttl);
-    }
-
-    /**
-     * Generates cache key.
      *
-     * @param mixed $attributes
-     * @return string
+     * @since 1.1.0
      */
-    private function build_cache_key($attributes)
+    private function set_content_cache(string $url, string $group, $content)
     {
-        return md5(serialize($attributes));
+        set_transient($this->get_cache_key($url, $group), $content, (int) $this->cache_ttl);
     }
 
     /**
-     * Return if cache is enabled.
+     * Constructs the cache key from the attributes.
+     *
+     * @param string $url The URL of the document
+     * @param string $group The cache group
+     *
+     * @since 1.1.0
+     */
+    private function get_cache_key(string $url, string $group)
+    {
+        return md5(self::$NAMESPACE . $group . $url . strval($this->cache_ttl) . strval($this->limit));
+    }
+
+    /**
+     * True if cache strategy is static, false if it's dynamic.
      *
      * @return boolean
+     *
+     * @since 1.1.0
      */
-    private function is_enabled_cache()
+    private function is_static_cache()
     {
-        return (bool) MARKDOWNGIT_CONFIG['enable_cache'];
+        return $this->cache_strategy === 'static';;
     }
 }

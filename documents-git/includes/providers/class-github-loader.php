@@ -4,7 +4,7 @@ class GithubLoader extends BaseLoader {
 
     protected static $PROVIDER = 'Github';
 
-    protected function extract_history_from_commit_json(&$commit) {
+    protected function extract_history_from_commit_json(array &$commit) {
         return array(
             $commit['commit']['author']['name'],
             $commit['commit']['author']['date'],
