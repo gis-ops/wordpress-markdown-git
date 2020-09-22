@@ -91,8 +91,6 @@ In the menu * Plugins * ► * Plugin Editor *, choose "Documents from Git" > `in
 
 The preference `cache_ttl` sets how many **seconds** the content cache will keep alive.
 
-Attention! The cache only will persists in server if your application has a [persistent cache plugin](https://codex.wordpress.org/Class_Reference/WP_Object_Cache#Persistent_Caching) enabled.
-
 #### `Token` authorization
 
 You **need to** authorize via `user` and `token` if you intend to publish from a private repository. You **don't need to** authorize if the repository is open.

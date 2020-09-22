@@ -76,12 +76,12 @@ abstract class BaseLoader {
      */
     public function doJupyter($sc_attrs)
     {
-        $input_url = $this->extract_attributes($sc_attrs);
-
-        $cached_response = $this->get_cached_content($input_url, 'jupyter');
-        if ($cached_response) {
+        $cache_key = $this->build_cache_key($sc_attrs);
+        if ($cached_response = $this->get_cached_content($cache_key, 'jupyter')) {
             return $cached_response;
         }
+
+        $input_url = $this->extract_attributes($sc_attrs);
 
         $this->set_repo_details($input_url);
 
@@ -119,7 +119,7 @@ abstract class BaseLoader {
         $output = '<div class="nbconvert">' . $inner_html . '</div>';
 
         if ($response_code == 200) {
-            $this->set_content_cache($input_url,'jupyter', $output);
+            $this->set_content_cache($cache_key,'jupyter', $output);
         }
 
         return $output;
@@ -134,8 +134,8 @@ abstract class BaseLoader {
      */
     public function doMarkdown($sc_attrs)
     {
-        $cached_response = $this->get_cached_content($sc_attrs['url'], 'markdown');
-        if ($cached_response) {
+        $cache_key = $this->build_cache_key($sc_attrs);
+        if ($cached_response = $this->get_cached_content($cache_key, 'markdown')) {
             return $cached_response;
         }
 
@@ -179,7 +179,7 @@ abstract class BaseLoader {
         $html_string = '<div class="markdown-body">' . $html_body . '</div>';
 
         if ($response_code == 200) {
-            $this->set_content_cache($sc_attrs['url'],'markdown', $html_string);
+            $this->set_content_cache($cache_key,'markdown', $html_string);
         }
 
         return $html_string;
@@ -195,11 +195,12 @@ abstract class BaseLoader {
      */
     public function doCheckout($sc_attrs)
     {
-        $url = $this->extract_attributes($sc_attrs);
-
-        if ($cached_response = $this->get_cached_content($url, 'checkout')) {
+        $cache_key = $this->build_cache_key($sc_attrs);
+        if ($cached_response = $this->get_cached_content($cache_key, 'checkout')) {
             return $cached_response;
         }
+
+        $url = $this->extract_attributes($sc_attrs);
 
         $this->set_repo_details($url);
 
@@ -228,7 +229,7 @@ abstract class BaseLoader {
         </div>';
 
         if ($response_code == 200) {
-            $this->set_content_cache($url, 'checkout', $html_string);
+            $this->set_content_cache($cache_key, 'checkout', $html_string);
         }
 
         return $html_string;
@@ -242,14 +243,14 @@ abstract class BaseLoader {
      */
     public function doHistory($sc_attrs)
     {
+        $cache_key = $this->build_cache_key($sc_attrs);
+        if ($cached_response = $this->get_cached_content($cache_key, 'history')) {
+            return $cached_response;
+        }
 
         $url = $this->extract_attributes($sc_attrs);
         if (empty($this->limit)) {
             $this->limit = 5;
-        }
-
-        if ($cached_response = $this->get_cached_content($url, 'history')) {
-            return $cached_response;
         }
 
         $this->set_repo_details($url);
@@ -270,7 +271,7 @@ abstract class BaseLoader {
         }
         $html_string .= '</article>';
 
-        $this->set_content_cache($url, 'history', $html_string);
+        $this->set_content_cache($cache_key, 'history', $html_string);
         return $html_string;
     }
 
@@ -355,14 +356,13 @@ abstract class BaseLoader {
      * @param string $group group where content was stored.
      * @return mixed
      */
-    private function get_cached_content($cache_key, $group)
+    private function get_cached_content(string $cache_key, string $group)
     {
         if (!$this->is_enabled_cache()) {
             return false;
         }
 
-        $cache = get_transient(md5($cache_key . $group));
-        return $cache;
+        return get_transient("markdown_git:$group:$cache_key");
     }
 
     /**
@@ -378,7 +378,18 @@ abstract class BaseLoader {
             return;
         }
 
-        set_transient( md5($cache_key . $group), $content, (int) $this->cache_ttl);
+        set_transient("markdown_git:$group:$cache_key", $content, (int) $this->cache_ttl);
+    }
+
+    /**
+     * Generates cache key.
+     *
+     * @param mixed $attributes
+     * @return string
+     */
+    private function build_cache_key($attributes)
+    {
+        return md5(serialize($attributes));
     }
 
     /**
