@@ -4,7 +4,7 @@ class GitlabLoader extends BaseLoader {
 
     protected static $PROVIDER = 'Gitlab';
 
-    protected function extract_history_from_commit_json(&$commit) {
+    protected function extract_history_from_commit_json(array &$commit) {
         return array(
             $commit['author_name'],
             $commit['created_at'],
@@ -55,7 +55,7 @@ class GitlabLoader extends BaseLoader {
         return $url;
     }
 
-    protected function set_repo_details($url)
+    protected function set_repo_details(string $url)
     {
         $url_parsed = parse_url($url);
         $domain = $url_parsed['host'];
