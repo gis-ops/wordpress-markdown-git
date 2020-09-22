@@ -23,7 +23,7 @@ The following platforms are currently supported:
 
 **Note**, this plugin uses Github's wonderful [`/markdown` API](https://developer.github.com/v3/markdown/) to render to HTML. This comes with 2 caveats:
 
-1. Unless authenticated, the rate limit is set at 60 requests per minute. Since v1.1.0 the plugin is capable of statically [caching content](#caching). In case that's not dynamic enough for you, it's **strongly recommended** to create a Github access token and register it with the plugin. Then the rate limit will be set to 5000 requests per hour. See [Global attributes section](#global-attributes) for details on how to do that.
+1. Unless authenticated, the rate limit is set at 60 requests per minute. Since v1.1.0 the plugin is capable of statically [caching content](#caching). In case that's not dynamic enough for you, your only option currently is to not use any cache in which case every document will be pulled from your provider every time someone opens it on your site. Then it's **strongly recommended** to create a Github access token and register it with the plugin. Then the rate limit will be set to 5000 requests per hour. See [Global attributes section](#global-attributes) for details on how to do that.
 2. The Markdown content cannot exceed 400 KB, so roughly 400 000 characters incl whitespace. If not a monographic dissertation, this should not be an applicable limit though.
 
 ### Shortcodes
@@ -98,13 +98,13 @@ Currently there's no way to flush the cache manually. However, changing `cache_t
 
 ##### Dynamic caching (`cache_strategy=dynamic`)
 
-**This is not implemented yet**. See [#4](https://github.com/gis-ops/wordpress-markdown-git/issues/4) for details.
+**This is not implemented yet**. See [#20](https://github.com/gis-ops/wordpress-markdown-git/issues/20) for details.
 
 #### `Token` authorization
 
 You **need to** authorize via `user` and `token` if you intend to publish from a private repository. You **don't need to** authorize if the repository is open.
 
-However, keep in mind that some platforms have stricter API limits for anonymous requests which are greatly extended if you provide your credentials. So even for public repos it could make sense. And it's strongly recommended to register a Github access token regardless of the VCS hosting platform, see the [beginning of the chapter](#usage).
+However, keep in mind that some platforms have stricter API limits for anonymous requests which are greatly extended if you provide your credentials. So even for public repos it could make sense. And unless you use this plugin's [caching capabilities](#caching), it's strongly recommended to register a Github access token regardless of the VCS hosting platform, see the [beginning of the chapter](#usage).
 
 How to generate the `token` depends on your platform:
 
@@ -124,7 +124,7 @@ We publish our own tutorials with this plugin: https://gis-ops.com/tutorials/.
 
 #### Publish Markdown from Github with 1 hour cache
 
-`[git-github-markdown url="https://github.com/gis-ops/tutorials/blob/master/qgis/QGIS_SimplePlugin.md" cache_ttl="3600"]`
+`[git-github-markdown url="https://github.com/gis-ops/tutorials/blob/master/qgis/QGIS_SimplePlugin.md" cache_ttl="3600" cache_strategy="static"]`
 
 #### Publish Jupyter notebook from Github
 

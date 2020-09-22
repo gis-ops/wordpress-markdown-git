@@ -1,15 +1,15 @@
 === Documents from Git ===
-Contributors: nilsnolde
+Contributors: nilsnolde,danilopinotti
 Plugin Name: Documents from Git
 Plugin URI: https://github.com/gis-ops/wordpress-markdown-git
 Tags: markdown,jupyter,notebook,github,bitbucket,gitlab,vcs
 Author URI: https://gis-ops.com
 Author: GIS-OPS UG
 Requires at least: 5.0.0
-Tested up to: 5.4.1
+Tested up to: 5.5.1
 Requires PHP: 7.0
-Stable tag: 1.0.2
-Version: 1.0.2
+Stable tag: 1.1.0
+Version: 1.1.0
 License: GPLv3
 License URI: https://github.com/gis-ops/wordpress-markdown-git/blob/master/LICENSE
 
@@ -46,7 +46,7 @@ The following platforms are currently supported:
 
 **Note**, this plugin uses Github's wonderful [`/markdown` API](https://developer.github.com/v3/markdown/) to render to HTML. This comes with 2 caveats:
 
-1. Unless authenticated, the rate limit is set at 60 requests per minute. It's **strongly recommended** to create a Github access token and register it with the plugin. Then the rate limit will be set to 5000 requests per hour. See [Global attributes section](#global-attributes) for details on how to do that.
+1. Unless authenticated, the rate limit is set at 60 requests per minute. Since v1.1.0 the plugin is capable of statically [caching content](#caching). In case that's not dynamic enough for you, your only option currently is to not use any cache in which case every document will be pulled from your provider every time someone opens it on your site. Then it's **strongly recommended** to create a Github access token and register it with the plugin. Then the rate limit will be set to 5000 requests per hour. See [Global attributes section](#global-attributes) for details on how to do that.
 2. The Markdown content cannot exceed 400 KB, so roughly 400 000 characters incl whitespace. If not a monographic dissertation, this should not be an applicable limit though.
 
 ### Shortcodes
@@ -92,7 +92,9 @@ Each shortcode takes a few attributes, indicating if it's required for public or
 | `url`       | all except `git-add-css` | :ballot_box_with_check:       | :ballot_box_with_check:       | string  | The browser URL of the document, e.g. https://github.com/gis-ops/wordpress-markdown-git/blob/master/README.md |
 | `user`      | all except `git-add-css` | :negative_squared_cross_mark: | :ballot_box_with_check:       | string  | The **user name** (not email) of an authorized user                                                           |
 | `token`     | all except `git-add-css` | :negative_squared_cross_mark: | :ballot_box_with_check:       | string  | The access token/app password for the authorized user                                                         |
-| `limit`     | `history`                | :negative_squared_cross_mark: | :negative_squared_cross_mark: | integer | Limits the history of commits to this number. Default 5.                                                                |
+| `cache_ttl` | all except `git-add-css` | :negative_squared_cross_mark:       | :negative_squared_cross_mark:       | integer | The time in seconds that the plugin will cache, **only for `cache_strategy=static`**.           |
+| `cache_strategy` | all except `git-add-css` | :negative_squared_cross_mark:       | :negative_squared_cross_mark:       | integer | Only `static` caching is implemented so far. `dynamic` caching is on the way!                   |
+| `limit`     | `history`                | :negative_squared_cross_mark: | :negative_squared_cross_mark: | integer | Limits the history of commits to this number. Default 5.                                                      |
 | `classes`   | `git-add-css`            | :ballot_box_with_check:       | :ballot_box_with_check:       | string  | The additional CSS classes to render the content with                                                         |
 
 #### Global attributes
@@ -103,11 +105,29 @@ In the menu *Plugins* ► *Plugin Editor*, choose "Documents from Git" and enter
 
 **Note**, setting the attributes manually in the shortcode has always precedence over any settings in `includes/config.json`.
 
+#### Caching
+
+Often we need to prioritize speed when loading content and, in addition, it is very costly to fetch, load and format the content every time we need to read the content of the post.
+
+This plugin soon offers 2 methods for caching, `static` and `dynamic` which can be set via the `cache_strategy` property.
+
+##### Static caching (`cache_strategy=static`)
+
+This is the default strategy, as it doesn't require any user action.
+
+The property `cache_ttl` sets how many **seconds** the content cache will keep alive.
+
+Currently there's no way to flush the cache manually. However, changing `cache_ttl` or the history `limit` will create a new cache.
+
+##### Dynamic caching (`cache_strategy=dynamic`)
+
+**This is not implemented yet**. See [#20](https://github.com/gis-ops/wordpress-markdown-git/issues/20) for details.
+
 #### `Token` authorization
 
 You **need to** authorize via `user` and `token` if you intend to publish from a private repository. You **don't need to** authorize if the repository is open.
 
-However, keep in mind that some platforms have stricter API limits for anonymous requests which are greatly extended if you provide your credentials. So even for public repos it could make sense. And it's strongly recommended to register a Github access token regardless of the VCS hosting platform, see the [beginning of the chapter](#usage).
+However, keep in mind that some platforms have stricter API limits for anonymous requests which are greatly extended if you provide your credentials. So even for public repos it could make sense. And unless you use this plugin's [caching capabilities](#caching), it's strongly recommended to register a Github access token regardless of the VCS hosting platform, see the [beginning of the chapter](#usage).
 
 How to generate the `token` depends on your platform:
 
@@ -124,6 +144,10 @@ We publish our own tutorials with this plugin: https://gis-ops.com/tutorials/.
 #### Publish Markdown from Github
 
 `[git-github-markdown url="https://github.com/gis-ops/tutorials/blob/master/qgis/QGIS_SimplePlugin.md"]`
+
+#### Publish Markdown from Github with 1 hour cache
+
+`[git-github-markdown url="https://github.com/gis-ops/tutorials/blob/master/qgis/QGIS_SimplePlugin.md" cache_ttl="3600" cache_strategy="static"]`
 
 #### Publish Jupyter notebook from Github
 
@@ -180,6 +204,10 @@ div.md_dashedbox div.markdown-github {
 
 == Frequently Asked Questions ==
 
+= Does the plugin support caching? =
+
+Yes, since v1.1.0 the plugin supports static caching of all relevant information. See the ["Caching" section](https://github.com/gis-ops/wordpress-markdown-git#caching) for details.
+
 = Are relative links supported? =
 
 No, relative image links (e.g. `![img](./img.png)`) cannot be processed by this plugin. Please see the notes in the [documentation](https://github.com/gis-ops/wordpress-markdown-git#images) for ways to work around this limitation.
@@ -198,6 +226,9 @@ Or directly from WordPress plugin repository.
 Or install the latest code as ZIP from https://github.com/gis-ops/wordpress-markdown-git/archive/master.zip
 
 == Changelog ==
+
+= v1.1.0 =
+* implement static caching
 
 = v1.0.2 =
 * Fixed rate limiting for unauthenticated `/markdown` requests
