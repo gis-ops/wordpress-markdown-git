@@ -1,6 +1,6 @@
 # WordPress Plugin - Publish Documents from Git
 
-This WordPress Plugin lets you easily publish, collaborate on and version control your \[**Markdown, Jupyter notebook**\] documents directly from your favorite remote Git platform, **even if it's self-hosted**.<a id="usage"><sup>1</sup></a>
+This WordPress Plugin lets you easily publish, collaborate on and version control your \[**Markdown, Jupyter notebook**\] documents directly from your favorite remote Git platform, **even if it's self-hosted**.<sup>[1](#usage)</sup>
 
 The advantages are:
 
