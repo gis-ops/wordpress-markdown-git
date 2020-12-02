@@ -19,7 +19,7 @@ The following platforms are currently supported:
 - Bitbucket
 - Gitlab
 
-<div id="footnote1" />
+<div id="footnote1" /> Here's a footnote.
 
 ## Usage
 
