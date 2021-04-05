@@ -66,7 +66,7 @@ class GitlabLoader extends BaseLoader {
 
         $exploded_path_last = explode('/', $exploded_path[1]);
         $branch = $exploded_path_last[1];
-        $file_path = implode('/', array_slice($exploded_path_last, 2));
+        $file_path = urlencode(implode('/', array_slice($exploded_path_last, 2)));
 
         $this->domain = $domain;
         $this->owner = urlencode($owner);
