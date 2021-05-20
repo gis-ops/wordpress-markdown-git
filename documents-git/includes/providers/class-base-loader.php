@@ -172,8 +172,9 @@ abstract class BaseLoader {
         );
 
         // Add the Github credentials to have high /markdown rate limits
-        $GITHUB_USER = MARKDOWNGIT_CONFIG['Github']['user'];
-        $GITHUB_TOKEN = MARKDOWNGIT_CONFIG['Github']['token'];
+        $page_opts = get_option('settings_markdowngit', array());
+        $GITHUB_USER = ($page_opts['github_user']);
+        $GITHUB_TOKEN = ($page_opts['secret']);
         if (!empty($GITHUB_USER) or !empty($GITHUB_TOKEN)) {
             $args['headers']['Authorization'] = 'Basic ' . base64_encode($GITHUB_USER . ':' . $GITHUB_TOKEN);
         }
@@ -320,7 +321,7 @@ abstract class BaseLoader {
      * Extracts the attributes from a shortcode. All attributes of all shortcodes are extracted,
      * but not necessarily passed, so they default to an empty string.
      *
-     * It also sets the class attributes "user", "token", "cache_ttl" and "limit" from config.json or shortcode attribute.
+     * It also sets the class attributes "user", "token", "cache_ttl" and "limit" from WP options or shortcode attribute.
      *
      * @param $attrs array Attributes of the shortcode
      * @return string parsed url
@@ -339,17 +340,21 @@ abstract class BaseLoader {
             )
         );
 
-        $this->user = ($user === '') ? (MARKDOWNGIT_CONFIG[static::$PROVIDER]["user"]) : ($user);
-        $this->token = ($token === '') ? (MARKDOWNGIT_CONFIG[static::$PROVIDER]["token"]) : ($token);
-        $this->limit = ($limit === '') ? (MARKDOWNGIT_CONFIG["limit"]) : ($limit);
-        $this->cache_ttl = ($cache_ttl === '') ? (MARKDOWNGIT_CONFIG["cache_ttl"]) : ($cache_ttl);
-        $this->cache_strategy = ($cache_strategy === '') ? (MARKDOWNGIT_CONFIG["cache_strategy"]) : ($cache_strategy);
+        $provider = strtolower(static::$PROVIDER);
+        $page_opts = get_option('settings_markdowngit', array());
+
+        $this->user = ($user === '') ? ($page_opts[$provider . '_user']) : ($user);
+        $this->token = ($token === '') ? ($page_opts[$provider . '_secret']) : ($token);
+        $this->limit = ($limit === '') ? ($page_opts['limit']) : ($limit);
+        $this->cache_ttl = ($cache_ttl === '') ? ($page_opts['cache_ttl']) : ($cache_ttl);
+        # TODO: eventually this will be dynamic to support dynamic cache
+        $this->cache_strategy = "static";
 
         return $url;
     }
 
     /**
-     * Get cached content when cache is enabled.
+     * Get cached content.
      *
      * @param string $url cache key to be serialized.
      * @param string $group group where content was stored.

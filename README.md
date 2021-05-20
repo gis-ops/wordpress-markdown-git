@@ -26,6 +26,12 @@ The following platforms are currently supported:
 1. Unless authenticated, the rate limit is set at 60 requests per minute. Since v1.1.0 the plugin is capable of statically [caching content](#caching). In case that's not dynamic enough for you, your only option currently is to not use any cache in which case every document will be pulled from your provider every time someone opens it on your site. Then it's **strongly recommended** to create a Github access token and register it with the plugin. Then the rate limit will be set to 5000 requests per hour. See [Global attributes section](#global-attributes) for details on how to do that.
 2. The Markdown content cannot exceed 400 KB, so roughly 400 000 characters incl whitespace. If not a monographic dissertation, this should not be an applicable limit though.
 
+### Configuration
+
+In the main menu _Settings_ ► _Documents from Git_ you can set all important global settings.
+
+**Note**, previous versions used to include a `config.json`. This is **deprecated** now due to security concerns.
+
 ### Shortcodes
 
 The plugin features a variety of shortcodes.
@@ -73,14 +79,6 @@ Each shortcode takes a few attributes, indicating if it's required for public or
 | `cache_strategy` | all except `git-add-css` | :negative_squared_cross_mark:       | :negative_squared_cross_mark:       | integer | Only `static` caching is implemented so far. `dynamic` caching is on the way!                   |
 | `limit`     | `history`                | :negative_squared_cross_mark: | :negative_squared_cross_mark: | integer | Limits the history of commits to this number. Default 5.                                                      |
 | `classes`   | `git-add-css`            | :ballot_box_with_check:       | :ballot_box_with_check:       | string  | The additional CSS classes to render the content with                                                         |
-
-#### Global attributes
-
-Since most attributes will be the same across the entire system, this plugin offers the possibility to set all attributes globally except for `url`:
-
-In the menu *Plugins* ► *Plugin Editor*, choose "Documents from Git" and enter your preferences in the `includes/config.json`.
-
-**Note**, setting the attributes manually in the shortcode has always precedence over any settings in `includes/config.json`.
 
 #### Caching
 
