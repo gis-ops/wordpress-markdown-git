@@ -55,7 +55,7 @@ class GithubLoader extends BaseLoader {
     {
         $domain_exploded = explode('.', $this->domain);
         $domain_no_tld = $domain_exploded[count($domain_exploded) - 2];
-        $url = "https://nbviewer.jupyter.org/$domain_no_tld/$this->owner/$this->repo/blob/$this->branch/$this->file_path";
+        $url = "https://nbviewer.jupyter.org/$domain_no_tld/$this->owner/$this->repo/blob/$this->branch/$this->file_path?flush_cache=true";
 
         return $url;
     }

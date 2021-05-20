@@ -6,10 +6,10 @@ Tags: markdown,jupyter,notebook,github,bitbucket,gitlab,vcs
 Author URI: https://gis-ops.com
 Author: GIS-OPS UG
 Requires at least: 5.0.0
-Tested up to: 5.5.1
+Tested up to: 5.7.2
 Requires PHP: 7.0
-Stable tag: 1.1.0
-Version: 1.1.0
+Stable tag: 2.0.0
+Version: 2.0.0
 License: GPLv3
 License URI: https://github.com/gis-ops/wordpress-markdown-git/blob/master/LICENSE
 
@@ -204,6 +204,10 @@ div.md_dashedbox div.markdown-github {
 
 == Frequently Asked Questions ==
 
+= Does the plugin offer a UI =
+
+Yes, since v2.0.0 the plugin has a subpage in the main Settings menu.
+
 = Does the plugin support caching? =
 
 Yes, since v1.1.0 the plugin supports static caching of all relevant information. See the ["Caching" section](https://github.com/gis-ops/wordpress-markdown-git#caching) for details.
@@ -217,15 +221,24 @@ No, relative image links (e.g. `![img](./img.png)`) cannot be processed by this 
 Yes, you can, if you provide the plugin's `config.json` with the necessary credentials for your platform (see [documentation](https://github.com/gis-ops/wordpress-markdown-git#global-attributes) for details). However, be aware that all image URLs you are referencing are openly accessible or provide the necessary authentication means. Also see [#13](https://github.com/gis-ops/wordpress-markdown-git/issues/13#issuecomment-638965192) and the [documentation](https://github.com/gis-ops/wordpress-markdown-git#images) for further details.
 
 == Installation ==
+
+Directly from WordPress plugin repository.
+
+Or the latest with WP Pusher:
+
 1. Install WP Pusher (https://wppusher.com) via ZIP and activate
 2. Install from Github via WP Pusher from gis-ops/wordpress-markdown-git
 3. Activate and add shortcode to your posts.
 
-Or directly from WordPress plugin repository.
-
 Or install the latest code as ZIP from https://github.com/gis-ops/wordpress-markdown-git/archive/master.zip
 
 == Changelog ==
+
+= v2.0.0 =
+* created Settings subpage for the plugin (BREAKING CHANGE)
+
+= v1.1.1 =
+* fix Gitlab URLs for subdirectory markdown paths
 
 = v1.1.0 =
 * implement static caching

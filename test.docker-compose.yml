@@ -1,0 +1,32 @@
+version: '2.4'
+volumes:
+  test_wp_db:
+
+services:
+  db:
+    image: mysql:5.7
+    container_name: test-wp-plugin-db
+    volumes:
+      - test_wp_db:/var/lib/mysql
+    environment:
+      - MYSQL_ROOT_PASSWORD=admin
+      - MYSQL_DATABASE=wordpress
+    ports:
+      - 3306:3306
+    restart: unless-stopped
+  wordpress:
+    depends_on:
+      - db
+    container_name: test-wp-plugin-wp
+    image: wordpress:5.7.2-apache
+    restart: unless-stopped
+    ports:
+      - 8080:80
+    volumes:
+      - ./documents-git:/var/www/html/wp-content/plugins/documents-git
+    environment:
+      ENABLE_DEBUG: "true"
+      SITE_URL: "http://localhost:8080"
+      WORDPRESS_DB_HOST: "db:3306"
+      WORDPRESS_DB_USER: "root"
+      WORDPRESS_DB_PASSWORD: "admin"
