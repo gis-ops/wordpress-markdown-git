@@ -48,14 +48,14 @@ function add_enclosing_classes($sc_attrs, $content) {
 }
 
 # Enqueue Github, nbconvert and plugin stylesheet
-add_action('wp_enqueue_style', 'add_styles');
+add_action('wp_enqueue_scripts', 'add_styles');
 function add_styles() {
     wp_enqueue_style( 'markdown_git', plugins_url( 'css/markdown-git.css', __FILE__ ));
     wp_enqueue_style( 'github_markdown', plugins_url( 'css/github-markdown.css', __FILE__ ));
     wp_enqueue_style( 'nbconvert_git', plugins_url( 'css/nbconvert.css', __FILE__ ), 'markdown-git');
 }
 
-# Add and set up the Page Builder class
+# Add and set up the Page Builder class for the settings UI
 require_once(MARKDOWNGIT_PLUGIN_PATH . '/includes/RationalOptionPages.php');
 $pages = array(
     'settings_markdowngit' => array(
