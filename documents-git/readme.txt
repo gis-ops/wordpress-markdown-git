@@ -8,8 +8,8 @@ Author: GIS-OPS UG
 Requires at least: 5.0.0
 Tested up to: 5.7.2
 Requires PHP: 7.0
-Stable tag: 2.0.1
-Version: 2.0.1
+Stable tag: 2.1.0
+Version: 2.1.0
 License: GPLv3
 License URI: https://github.com/gis-ops/wordpress-markdown-git/blob/master/LICENSE
 
@@ -233,6 +233,9 @@ Or the latest with WP Pusher:
 Or install the latest code as ZIP from https://github.com/gis-ops/wordpress-markdown-git/archive/master.zip
 
 == Changelog ==
+
+= v2.1.0 =
+* styles were not enqueued properly which led to default markdown rendering
 
 = v2.0.0 =
 * created Settings subpage for the plugin (BREAKING CHANGE)

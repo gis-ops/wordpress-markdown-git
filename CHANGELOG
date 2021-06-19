@@ -14,6 +14,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Removed
 
+## [2.1.0]
+
+### Fixed
+
+- styles were not enqueued properly which led to default markdown rendering ([#32](https://github.com/gis-ops/wordpress-markdown-git/issues/32))
+
 ## [2.0.0]
 
 ### Added
