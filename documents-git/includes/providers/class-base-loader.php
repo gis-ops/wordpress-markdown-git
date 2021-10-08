@@ -174,7 +174,7 @@ abstract class BaseLoader {
         // Add the Github credentials to have high /markdown rate limits
         $page_opts = get_option('settings_markdowngit', array());
         $GITHUB_USER = ($page_opts['github_user']);
-        $GITHUB_TOKEN = ($page_opts['secret']);
+        $GITHUB_TOKEN = ($page_opts['github_secret']);
         if (!empty($GITHUB_USER) or !empty($GITHUB_TOKEN)) {
             $args['headers']['Authorization'] = 'Basic ' . base64_encode($GITHUB_USER . ':' . $GITHUB_TOKEN);
         }
